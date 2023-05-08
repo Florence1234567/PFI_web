@@ -1,0 +1,39 @@
+﻿@model IEnumerable<ChatManager.Models.User>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
+    <img src="~/friendships.png" style="width: 56px;" />
+    <h3>Gestion des amitiés</h3>
+</div>
+
+<hr />
+
+<hr />
+
+<div id="friendshipsListContainer">
+    @foreach (var item in Model)
+    {
+        <div class="friendContainer">
+            <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
+                <div class="userItem">
+                    @Helper.AvatarUser(item, "UserSmallAvatar")
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+<script defer>
+    let friendshipStatus = new PartialRefresh("Friendships/GetFriendshipStatus", "friendshipsListContainter", 5, UpdateFriendshipCallback);
+
+    function UpdateFriendshipCallback() {
+        $(".command").click(function () {
+            var url = $(this).attr("url");
+            var message = $(this).attr("message");
+            friendshipStatus.confirmedCommand(message, url);
+        });
+    }
+</script>

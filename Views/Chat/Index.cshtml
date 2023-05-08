@@ -4,8 +4,24 @@
     ViewBag.Title = "Index";
 }
 
-<div class="page-title">
-    <img src="~/favicon.png" class="icon-title"/>
-    <h2>Salle de discussions</h2>
+<div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
+    <img src="~/favicon.png" style="width: 56px;" />
+    <h3>Salle de discussions</h3>
+</div>
+
+<div class="main">
+    <div style="display: grid; grid-template-columns: 60px auto; column-gap: 10px;">
+        <div class="friendsListContainer" id="friendListContainer">
+
+        </div>
+        <div>
+            <div class="messagesPanel" id="messagePanel">
+                <div class="messagesHeader">
+                    <h4>Sélectionnez un ami.</h4>
+                </div>
+            </div>
+            <div class="sendMessageLayout"></div>
+        </div>
+    </div>
 </div>
 
