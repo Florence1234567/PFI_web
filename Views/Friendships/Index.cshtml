@@ -16,24 +16,58 @@
 <div id="friendshipsListContainer">
     @foreach (var item in Model)
     {
-        <div class="friendContainer">
-            <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
-                <div class="userItem">
+        if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
+        {
+            <div class="friendContainer">
+                <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
                     @Helper.AvatarUser(item, "UserSmallAvatar")
-                </div>
-            </a>
-        </div>
+                </a>
+                @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+            </div>
+        }
     }
 </div>
 
 <script defer>
-    let friendshipStatus = new PartialRefresh("Friendships/GetFriendshipStatus", "friendshipsListContainter", 5, UpdateFriendshipCallback);
+    let friendShipsStatus = new PartialRefresh("/Friendships/GetFriendShipsStatus", "friendshipsListContainer", 5, UpdatefriendShipsCallback);
 
-    function UpdateFriendshipCallback() {
+    $('#Search').keypress(function (event) {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode == '13') {
+            var searchtext = $("#Search").val();
+            friendShipsStatus.command("/Friendships/Search?text=" + searchtext);
+        }
+    });
+    $('#SearchCommand').click(function () {
+        var searchtext = $("#Search").val();
+        friendShipsStatus.command("/Friendships/Search?text=" + searchtext);
+    });
+
+    $('#filter_NotFriend').click(function () {
+        friendShipsStatus.command("/Friendships/SetFilterNotFriend?check=" + $(this).is(':checked'));
+    })
+    $('#filter_Request').click(function () {
+        friendShipsStatus.command("/Friendships/SetFilterRequest?check=" + $(this).is(':checked'));
+    })
+    $('#filter_Pending').click(function () {
+        friendShipsStatus.command("/Friendships/SetFilterPending?check=" + $(this).is(':checked'));
+    })
+    $('#filter_Friend').click(function () {
+        friendShipsStatus.command("/Friendships/SetFilterFriend?check=" + $(this).is(':checked'));
+    })
+    $('#filter_Refused').click(function () {
+        friendShipsStatus.command("/Friendships/SetFilterRefused?check=" + $(this).is(':checked'));
+    })
+    $('#filter_Blocked').click(function () {
+        friendShipsStatus.command("/Friendships/SetFilterBlocked?check=" + $(this).is(':checked'));
+    })
+
+    function UpdatefriendShipsCallback() {
         $(".command").click(function () {
             var url = $(this).attr("url");
             var message = $(this).attr("message");
-            friendshipStatus.confirmedCommand(message, url);
+            friendShipsStatus.confirmedCommand(message, url);
         });
+
     }
 </script>
