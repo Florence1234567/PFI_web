@@ -491,3 +491,12 @@ input[type=checkbox] {
 input[type=search]::-webkit-search-cancel-button {
     -webkit-appearance: searchfield-cancel-button;
 }
+
+page-title {
+    display: grid;
+    align-items: center;
+}
+
+icon-title {
+    width: 56px;
+}
