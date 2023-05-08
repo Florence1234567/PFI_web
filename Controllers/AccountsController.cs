@@ -10,6 +10,7 @@ namespace ChatManager.Controllers
 {
     public class AccountsController : Controller
     {
+
         #region Account creation
         [HttpPost]
         public JsonResult EmailAvailable(string email, int Id = 0)
@@ -68,7 +69,7 @@ namespace ChatManager.Controllers
                 if (unverifiedEmail != null)
                 {
                     string verificationUrl = Url.Action("VerifyUser", "Accounts", null, Request.Url.Scheme);
-                    String Link = @"<br/><a href='" + verificationUrl + "?userid=" + user.Id + "&code=" + unverifiedEmail.VerificationCode + @"' > Confirmez votre inscription...</a>";
+                    String Link = @"<br/><a href='" + verificationUrl + "?code=" + unverifiedEmail.VerificationCode + @"' > Confirmez votre inscription...</a>";
 
                     String suffixe = "";
                     if (user.GenderId == 2)
@@ -104,18 +105,23 @@ namespace ChatManager.Controllers
         {
             return View();
         }
-        public ActionResult VerifyUser(int userid, int code)
+        public ActionResult VerifyUser(string code)
         {
-            User newlySubscribedUser = DB.Users.Get(userid);
-            if (newlySubscribedUser != null)
+            UnverifiedEmail UnverifiedEmail = DB.Users.FindUnverifiedEmail(code);
+            if (UnverifiedEmail != null)
             {
-                if (!DB.Users.HaveUnverifiedEmail(userid, code))
+                User newlySubscribedUser = DB.Users.Get(UnverifiedEmail.UserId);
+
+                if (newlySubscribedUser != null)
                 {
                     if (DB.Users.EmailVerified(newlySubscribedUser.Email))
                         return RedirectToAction("AlreadyVerified");
+
+                    if (DB.Users.Verify_User(newlySubscribedUser.Id, code))
+                        return RedirectToAction("VerifyDone/" + newlySubscribedUser.Id);
                 }
-                if (DB.Users.Verify_User(userid, code))
-                    return RedirectToAction("VerifyDone/" + userid);
+                else
+                    RedirectToAction("VerifyError");
             }
             return RedirectToAction("VerifyError");
         }
@@ -135,7 +141,7 @@ namespace ChatManager.Controllers
                 if (unverifiedEmail != null)
                 {
                     string verificationUrl = Url.Action("VerifyUser", "Accounts", null, Request.Url.Scheme);
-                    String Link = @"<br/><a href='" + verificationUrl + "?userid=" + user.Id + "&code=" + unverifiedEmail.VerificationCode + @"' > Confirmez votre adresse...</a>";
+                    String Link = @"<br/><a href='" + verificationUrl + "?code=" + unverifiedEmail.VerificationCode + @"' > Confirmez votre adresse...</a>";
 
                     string Subject = "ChatManager - Vérification de courriel...";
 
@@ -175,7 +181,7 @@ namespace ChatManager.Controllers
             {
                 User user = DB.Users.Get(resetPasswordCommand.UserId);
                 string verificationUrl = Url.Action("ResetPassword", "Accounts", null, Request.Url.Scheme);
-                String Link = @"<br/><a href='" + verificationUrl + "?userid=" + user.Id + "&code=" + resetPasswordCommand.VerificationCode + @"' > Réinitialisation de mot de passe...</a>";
+                String Link = @"<br/><a href='" + verificationUrl + "?code=" + resetPasswordCommand.VerificationCode + @"' > Réinitialisation de mot de passe...</a>";
 
                 string Subject = "ChatManager - Réinitialisaton ...";
 
@@ -190,11 +196,11 @@ namespace ChatManager.Controllers
                 SMTP.SendEmail(user.GetFullName(), user.Email, Subject, Body);
             }
         }
-        public ActionResult ResetPassword(int userid, int code)
+        public ActionResult ResetPassword(string code)
         {
-            ResetPasswordCommand resetPasswordCommand = DB.Users.Find_ResetPasswordCommand(userid, code);
+            ResetPasswordCommand resetPasswordCommand = DB.Users.Find_ResetPasswordCommand(code);
             if (resetPasswordCommand != null)
-                return View(new PasswordView() { UserId = userid });
+                return View(new PasswordView() { Code = code });
             return RedirectToAction("ResetPasswordError");
         }
         [HttpPost]
@@ -203,8 +209,14 @@ namespace ChatManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (DB.Users.ResetPassword(passwordView.UserId, passwordView.Password))
-                    return RedirectToAction("ResetPasswordSuccess");
+                ResetPasswordCommand resetPasswordCommand = DB.Users.Find_ResetPasswordCommand(passwordView.Code);
+                if (resetPasswordCommand != null)
+                {
+                    if (DB.Users.ResetPassword(resetPasswordCommand.UserId, passwordView.Password))
+                        return RedirectToAction("ResetPasswordSuccess");
+                    else
+                        return RedirectToAction("ResetPasswordError");
+                }
                 else
                     return RedirectToAction("ResetPasswordError");
             }
@@ -292,6 +304,10 @@ namespace ChatManager.Controllers
         [ValidateAntiForgeryToken()]
         public ActionResult Login(LoginCredential loginCredential)
         {
+            DateTime serverDate = DateTime.Now;
+            int serverTimeZoneOffset = serverDate.Hour - serverDate.ToUniversalTime().Hour;
+            Session["TimeZoneOffset"] = -(loginCredential.TimeZoneOffset + serverTimeZoneOffset);
+
             if (ModelState.IsValid)
             {
                 if (DB.Users.EmailBlocked(loginCredential.Email))

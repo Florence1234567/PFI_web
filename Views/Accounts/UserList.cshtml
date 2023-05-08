@@ -30,6 +30,7 @@
                     GetUsersList.confirmedCommand(this.title + ' ?', "@Url.Action("Delete")" + "?userid=" + userid);
                 }
             );
+            // do not use
             $(".SwitchToUser").click(function () {
                 window.location = "/Accounts/SwitchToUser/" + $(this).attr("id");
             })

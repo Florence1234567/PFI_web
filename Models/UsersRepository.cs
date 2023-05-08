@@ -102,10 +102,12 @@ namespace ChatManager.Models
         {
             try
             {
-                BeginTransaction();
+
                 User userToDelete = DB.Users.Get(userId);
                 if (userToDelete != null)
                 {
+                    BeginTransaction();
+
                     RemoveLogins(userId);
                     RemoveUnverifiedEmails(userId);
                     RemoveResetPasswordCommands(userId);
@@ -113,9 +115,11 @@ namespace ChatManager.Models
                     base.Delete(userId);
                     OnlineUsers.RemoveUser(userToDelete.Id);
                     OnlineUsers.SetHasChanged();
+
+                    EndTransaction();
                     return true;
                 }
-                EndTransaction();
+
                 return false;
             }
             catch (Exception ex)
@@ -147,7 +151,7 @@ namespace ChatManager.Models
         {
             return ToList().OrderBy(u => u.FirstName).ThenBy(u => u.LastName);
         }
-        public bool Verify_User(int userId, int code)
+        public bool Verify_User(int userId, string code)
         {
             User user = Get(userId);
             if (user != null)
@@ -185,7 +189,7 @@ namespace ChatManager.Models
             {
                 BeginTransaction();
                 RemoveUnverifiedEmails(userId);
-                UnverifiedEmail unverifiedEmail = new UnverifiedEmail() { UserId = userId, Email = email, VerificationCode = DateTime.Now.Millisecond };
+                UnverifiedEmail unverifiedEmail = new UnverifiedEmail() { UserId = userId, Email = email, VerificationCode = Guid.NewGuid().ToString() };
                 unverifiedEmail.Id = DB.UnverifiedEmails.Add(unverifiedEmail);
                 EndTransaction();
                 return unverifiedEmail;
@@ -197,9 +201,9 @@ namespace ChatManager.Models
                 return null;
             }
         }
-        public bool HaveUnverifiedEmail(int userId, int code)
+        public UnverifiedEmail FindUnverifiedEmail(string code)
         {
-            return DB.UnverifiedEmails.ToList().Where(u => (u.UserId == userId && u.VerificationCode == code)).FirstOrDefault() != null;
+            return DB.UnverifiedEmails.ToList().Where(u => (u.VerificationCode == code)).FirstOrDefault();
         }
         public ResetPasswordCommand Add_ResetPasswordCommand(string email)
         {
@@ -211,7 +215,7 @@ namespace ChatManager.Models
                     BeginTransaction();
                     RemoveResetPasswordCommands(user.Id); // Flush previous request
                     ResetPasswordCommand resetPasswordCommand =
-                        new ResetPasswordCommand() { UserId = user.Id, VerificationCode = DateTime.Now.Millisecond };
+                        new ResetPasswordCommand() { UserId = user.Id, VerificationCode = Guid.NewGuid().ToString() };
 
                     resetPasswordCommand.Id = DB.ResetPasswordCommands.Add(resetPasswordCommand);
                     EndTransaction();
@@ -226,9 +230,9 @@ namespace ChatManager.Models
                 return null;
             }
         }
-        public ResetPasswordCommand Find_ResetPasswordCommand(int userid, int verificationCode)
+        public ResetPasswordCommand Find_ResetPasswordCommand(string verificationCode)
         {
-            return DB.ResetPasswordCommands.ToList().Where(r => (r.UserId == userid && r.VerificationCode == verificationCode)).FirstOrDefault();
+            return DB.ResetPasswordCommands.ToList().Where(r => (r.VerificationCode == verificationCode)).FirstOrDefault();
         }
         public bool ResetPassword(int userId, string password)
         {
@@ -240,7 +244,7 @@ namespace ChatManager.Models
                 {
                     BeginTransaction();
                     RemoveResetPasswordCommands(user.Id);
-                    var result =  base.Update(user);
+                    var result = base.Update(user);
                     EndTransaction();
                     return result;
                 }
