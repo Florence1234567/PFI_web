@@ -94,6 +94,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script defer>
         let status = new PartialRefresh()
+
         $("#SearchButton").click(() => {
             var searchText = $("#Search").val().toLowerCase();
 
@@ -112,12 +113,6 @@
             window.location = "@Url.Action("SetFriendshipStatus")" + "/" + $("#Category").val();
         })
 
-        $("#addOrRemoveFriend").click(() => {
-            console.log("friends");
-            var url = $(this).data('url');
-            window.location.href = url;
-
-        })
 
 </script>
 }
