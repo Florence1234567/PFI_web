@@ -18,7 +18,15 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
-            return View(DB.Users.ToList().OrderBy(m => m.FirstName).ThenBy(m => m.LastName));
+            if (Session["FriendshipFilter"] == null)
+                Session["FriendshipFilter"] = "NotFriend";
+            return View(DB.Users.ToList().OrderBy(m => m.FirstName).ThenBy(m => m.LastName).Where(m => m.Status == (string)Session["FriendshipFilter"]));
         }
+        public ActionResult SetFriendshipStatus(int id)
+        {
+            Session["FriendshipFilter"] = id;
+            return RedirectToAction("Index");
+        }
+
     }
 }
