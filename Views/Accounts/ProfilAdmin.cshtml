@@ -30,6 +30,12 @@
     </fieldset>
 
     <fieldset class="formField">
+        <div class="legend">@Html.DisplayNameFor(model => model.GenderId)</div>
+        @Helper.ListToRadioButtonGroup("GenderId", (SelectList)ViewBag.Genders, Model.GenderId)
+        @Html.ValidationMessageFor(model => model.GenderId, "", new { @class = "text-danger" })
+    </fieldset>
+
+    <fieldset class="formField">
         <div class="legend">@Html.DisplayNameFor(model => model.Email)</div>
         @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = @Html.DisplayNameFor(model => model.Email) } })
         @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })

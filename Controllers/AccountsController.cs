@@ -299,10 +299,15 @@ namespace ChatManager.Controllers
         {
             Session["UserToEdit"] = id;
 
+            ViewBag.Genders = SelectListUtilities<Gender>.Convert(DB.Genders.ToList());
             ViewBag.UserType = SelectListUtilities<UserType>.Convert(DB.UserTypes.ToList());
             User userToEdit = DB.Users.FindUser(id);
             if (userToEdit != null)
+            {
+                Session["UnchangedPasswordCode"] = Guid.NewGuid().ToString().Substring(0, 12);
+                userToEdit.Password = userToEdit.ConfirmPassword = (string)Session["UnchangedPasswordCode"];
                 return View(userToEdit);
+            }
 
             return null;
         }
@@ -318,11 +323,13 @@ namespace ChatManager.Controllers
             user.Blocked = currentUser.Blocked;
             user.Avatar = currentUser.Avatar;
             user.CreationDate = currentUser.CreationDate;
-            user.GenderId = currentUser.GenderId;
 
             string newEmail = "";
             if (ModelState.IsValid)
             {
+                if (user.Password == (string)Session["UnchangedPasswordCode"])
+                    user.Password = user.ConfirmPassword = currentUser.Password;
+
                 if (user.Email != currentUser.Email)
                 {
                     newEmail = user.Email;
@@ -342,6 +349,7 @@ namespace ChatManager.Controllers
                 else
                     return RedirectToAction("Report", "Errors", new { message = "Échec de modification de profil" });
             }
+            ViewBag.Genders = SelectListUtilities<Gender>.Convert(DB.Genders.ToList());
             ViewBag.UserType = SelectListUtilities<UserType>.Convert(DB.UserTypes.ToList());
             return View(currentUser);
         }
