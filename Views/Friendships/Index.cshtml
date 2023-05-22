@@ -15,6 +15,7 @@
     <span id="SearchButton" class="icon fa fa-search" style="padding-left: 10px;"></span>
 </div>
 <div class="friendfilters">
+
     <input type="checkbox" id="FilterNotFriend" class="filter" checked />
     <label for="FilterNotFriend" class="fa green fa-plus-circle" title="Afficher/Masqer les usagers qui ne sont pas encore ami avec vous."></label>
     <input type="checkbox" id="FilterRequest" class="filter" checked />
@@ -45,8 +46,30 @@
     }
 </div>
 
-<script defer>
-    $("#FilterNotFriend").change(() => {
-             window.location = "@Url.Action("SetFriendshipFilter")" + "/" + $("#Category").val();
-         })
-</script>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script defer>
+       
+        $("#SearchButton").click(() => {
+            var searchText = $("#Search").val().toLowerCase();
+
+            $('#friendshipsListContainer .friendContainer').each(function () {
+                var name = $(this).text().toLowerCase();
+                if (name.includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        $("#FilterNotFriend").change(() => {
+            console.log("No friends");
+            window.location = "@Url.Action("SetFriendshipStatus")" + "/" + $("#Category").val();
+        })
+
+    </script>
+}
