@@ -24,7 +24,9 @@
     <input type="checkbox" id="FilterFriend" class="filter" checked />
     <label for="FilterFriend" class="fa green fa-check-circle" title="Afficher/Masqer les usagers qui sont ami avec vous."></label>
     <input type="checkbox" id="FilterBlocked" class="filter" checked />
-    <label for="FilterBlocked" class="fa red fa-times-circle" title="Afficher/Masqer les usagers qui vous ont bloqué."></label>
+    <label for="FilterDeclined" class="fa red fa-times-circle" title="Afficher/Masqer les usagers qui vous ont bloqué."></label>
+    <input type="checkbox" id="FilterBlocked" class="filter" checked />
+    <label for="FilterBlocked" class="fa red fa-ban" title="Afficher/Masqer les usagers qui vous ont bloqué."></label>
 </div>
 <hr />
 
@@ -45,6 +47,6 @@
 
 <script defer>
     $("#FilterNotFriend").change(() => {
-             window.location = "@Url.Action("SetCurrentCategoryId")" + "/" + $("#Category").val();
+             window.location = "@Url.Action("SetFriendshipStatus")" + "/" + $("#Category").val();
          })
 </script>

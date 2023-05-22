@@ -102,7 +102,6 @@ namespace ChatManager.Models
         {
             try
             {
-
                 User userToDelete = DB.Users.Get(userId);
                 if (userToDelete != null)
                 {

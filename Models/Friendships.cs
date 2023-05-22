@@ -13,11 +13,10 @@ namespace ChatManager.Models
     {
         public Friendships()
         {
-            IdUserConnected = OnlineUsers.GetSessionUser().Id;
+
         }
 
         #region Data Members
-        public int IdUserConnected { get; set; }
 
         public int IdUser { get; set; }
 
