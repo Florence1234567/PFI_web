@@ -52,21 +52,29 @@
                     {
                         <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
                             <div style="display:inline;">
-                                <span class="fa green fa-check icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
-                                <span class="fa red fa-times icon" title="Refuser la demande d'ami de @item.GetFullName(false)"></span>
+                                <span class="fa green fa-clock-o icon" title="En attente de  @item.GetFullName(false)"></span>
+                                <span class="fa red fa-times icon" title="Retirer la demande d'ami à @item.GetFullName(false)"></span>
                             </div>
                         </a>
                     }
                     else if (item.Status == 2)
                     {
-                        <span class="fa green fa-clock-o icon" title="En attente de  @item.GetFullName(false)"></span>
-                        <span class="fa red fa-times icon" title="Retirer la demande d'ami à @item.GetFullName(false)"></span>
-
+                        <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
+                            <div style="display:inline;">
+                                <span class="fa green fa-check icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
+                                <span class="fa red fa-times icon" title="Refuser la demande d'ami de @item.GetFullName(false)"></span>
+                            </div>
+                        </a>
                     }
                     else if (item.Status == 3)
                     {
-                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                            <span class="fa red fa-times-circle icon" title="Envoyer une demande d'ami à @item.GetFullName()"></span>
+                        <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
+                            <div style="display:grid">
+                                <span class="fa green fa-check-circle icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
+                                <a href="/Friendships/RemoveFriendship/@item.Id">
+                                    <span class="fa red fa-times-circle icon" title="Envoyer une demande d'ami à @item.GetFullName()"></span>
+                                </a>
+                            </div>
                         </a>
                     }
                     else if (item.Status == 4)
@@ -92,9 +100,8 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <script defer>
-        let status = new PartialRefresh()
-
+<script defer>
+        let status = new PartialRefresh("/Friendships/GetFriendShipsStatus", "friendshipsListContainer", 5, UpdatefriendShipsCallback)
         $("#SearchButton").click(() => {
             var searchText = $("#Search").val().toLowerCase();
 
@@ -108,11 +115,19 @@
             });
         });
 
-        $("#FilterNotFriend").change(() => {
-            console.log("No friends");
-            window.location = "@Url.Action("SetFriendshipStatus")" + "/" + $("#Category").val();
+
+        $('#filter_NotFriend').click(function () {
+            friendShipsStatus.command("/Friendships/SetFilterNotFriend?check=" + $(this).is(':checked'));
         })
 
 
+        function UpdatefriendShipsCallback() {
+            $(".command").click(function () {
+                var url = $(this).attr("url");
+                var message = $(this).attr("message");
+                friendShipsStatus.confirmedCommand(message, url);
+            });
+
+        }
 </script>
 }
