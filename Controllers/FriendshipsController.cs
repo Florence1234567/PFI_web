@@ -29,5 +29,17 @@ namespace ChatManager.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult SendFriendshipRequest(int id)
+        {
+            User currentUser = OnlineUsers.GetSessionUser();
+            currentUser.Status = 2;
+            DB.Users.Update(currentUser);
+
+            User user = DB.Users.FindUser(id);
+            user.Status = 1;
+            DB.Users.Update(user);
+
+            return RedirectToAction("Index");
+        }
     }
 }
