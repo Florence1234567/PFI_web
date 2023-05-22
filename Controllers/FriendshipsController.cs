@@ -12,7 +12,7 @@ namespace ChatManager.Controllers
     {
         [HttpPost]
         public JsonResult GetFriendshipStatus(int id)
-        {
+        { 
             return Json(DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id));
         }
 
