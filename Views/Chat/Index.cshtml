@@ -45,14 +45,34 @@
         $("#message").hide();
         $("#send").hide();
 
-        function SendMessage() {
+        // MESSAGES 
 
+        function SendMessage() {
+            $("#message").text("");
+        }
+
+        function GetMessages() {
+            $.ajax({
+                url: "/api/messages",
+                type: "GET",
+                success: function (data) {
+                    // Handle the successful response and display the messages
+                    // Here, 'data' represents the returned list of messages
+
+                    // Example: Loop through the messages and display them
+                    for (var i = 0; i < data.length; i++) {
+                        var message = data[i];
+                        console.log(message); // Display the message in the console or use it as needed
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    // Handle any error that occurs during the request
         }
 
         function HideFriendBorder() {
-            $('.FriendAvatar').each(function () {
+            $('.selectedTarget').each(function () {
                 $(this).removeClass("selectedTarget");
-                $(this).toggleClass("unselectedTarget");
+                $(this).addClass("unselectedTarget");
             });
         }
 
@@ -62,7 +82,12 @@
             avatar.css("margin-top", "10px"); 
 
             $contentContainer.append(avatar);
-            $contentContainer.append($("<span>").text(" " + name));
+            //$contentContainer.append($("<div>").text(" " + name));
+            var div = $("<span>").addClass("ellipsis");
+
+            div.text(" " + name);
+
+            $contentContainer.append(div);
 
             $("#Selected").empty().append("Conversation avec ", $contentContainer);
 
@@ -74,21 +99,21 @@
         $(".unselectedTarget").click(function () {
             HideFriendBorder();
 
-            $(this).toggleClass("selectedTarget");
+            $(this).addClass("selectedTarget");
             $(this).removeClass("unselectedTarget");
 
-            var avatarClone = $(this).children().clone();
+            var avatarClone = $(this).find(".UserSmallAvatar").clone();
             avatarClone.removeClass("UserSmallAvatar");
-            avatarClone.toggleClass("UserMediumAvatar");
+            avatarClone.addClass("UserMediumAvatar");
 
             var friendName = $(this).attr("title");
 
             ShowSelectedFriend(friendName, avatarClone);
         })
 
-        $("#send").click(function ()) {
+        $("#send").click(function () {
             SendMessage();
-        }
+        })
        
     </script>
 }

@@ -20,6 +20,7 @@ namespace ChatManager.Controllers
             return View(users);
         }
 
+        [HttpGet]
         public ActionResult SendMessage(int id, string message)
         {
             var currentUser = OnlineUsers.GetSessionUser();
