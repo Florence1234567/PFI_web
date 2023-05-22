@@ -13,7 +13,7 @@ namespace ChatManager.Controllers
         [HttpPost]
         public JsonResult GetFriendshipStatus(int id)
         {
-            return Json(DB.Users.FindUser(id).Status);
+            return Json(DB.Users.FindUser(id));
         }
 
         [OnlineUsers.UserAccess]
@@ -31,13 +31,7 @@ namespace ChatManager.Controllers
 
         public ActionResult SendFriendshipRequest(int id)
         {
-            User currentUser = OnlineUsers.GetSessionUser();
-            currentUser.Status = 2;
-            DB.Users.Update(currentUser);
-
-            User user = DB.Users.FindUser(id);
-            user.Status = 1;
-            DB.Users.Update(user);
+            //DB.Friendships.Add(new Friendship(OnlineUsers.GetSessionUser().Id, id));
 
             return RedirectToAction("Index");
         }
