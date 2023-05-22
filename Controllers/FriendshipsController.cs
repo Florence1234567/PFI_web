@@ -22,7 +22,7 @@ namespace ChatManager.Controllers
                 Session["FriendshipFilter"] = "NotFriend";
             return View(DB.Users.ToList().OrderBy(m => m.FirstName).ThenBy(m => m.LastName).Where(m => m.Status == (string)Session["FriendshipFilter"]));
         }
-        public ActionResult SetFriendshipStatus(int id)
+        public ActionResult SetFriendshipFilter(int id)
         {
             Session["FriendshipFilter"] = id;
             return RedirectToAction("Index");

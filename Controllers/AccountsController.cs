@@ -252,6 +252,23 @@ namespace ChatManager.Controllers
             return null;
         }
 
+        public ActionResult ProfilAdmin()
+        {
+            ViewBag.Genders = SelectListUtilities<Gender>.Convert(DB.Genders.ToList());
+            User userToEdit = DB.Users.FindUser((int)Session["UserToEdit"]);
+            if (userToEdit != null)
+            {
+                return View(userToEdit);
+            }
+            return null;
+        }
+
+        public ActionResult SetUserToEdit(int id)
+        {
+            Session["UserToEdit"] = id;
+            return RedirectToAction("ProfilAdmin");
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken()]
         public ActionResult Profil(User user)
