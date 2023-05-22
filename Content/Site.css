@@ -388,6 +388,13 @@ input[type=checkbox] {
   margin-bottom:10px;
 }
 
+    .FriendAvatar :hover {
+        border-color: lightblue;
+        border-width: 10px;
+        border-radius: 1000px;
+        border: 4px solid green;
+    }
+
 .SelectedFriend {
     padding:2px;
     border-color: green;
