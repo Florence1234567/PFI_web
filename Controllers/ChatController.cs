@@ -25,6 +25,7 @@ namespace ChatManager.Controllers
         [HttpGet]
         public ActionResult GetMessages(int id)
         {
+            
 
 
             return View();
