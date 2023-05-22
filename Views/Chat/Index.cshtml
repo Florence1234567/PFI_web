@@ -48,25 +48,26 @@
         // MESSAGES 
 
         function SendMessage() {
-            $("#message").text("");
+            $("#message").val("");
         }
 
         function GetMessages() {
             $.ajax({
-                url: "/api/messages",
+                url: "/Chat/GetMessages",
                 type: "GET",
                 success: function (data) {
-                    // Handle the successful response and display the messages
-                    // Here, 'data' represents the returned list of messages
 
-                    // Example: Loop through the messages and display them
                     for (var i = 0; i < data.length; i++) {
                         var message = data[i];
-                        console.log(message); // Display the message in the console or use it as needed
+                        console.log(message);
+
                     }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    // Handle any error that occurs during the request
+                    console.log("ERREUR");
+                }
+
+            });
         }
 
         function HideFriendBorder() {

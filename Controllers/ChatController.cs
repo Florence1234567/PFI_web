@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 
 namespace ChatManager.Controllers
 {
@@ -20,7 +21,16 @@ namespace ChatManager.Controllers
             return View(users);
         }
 
+
         [HttpGet]
+        public ActionResult GetMessages(int id)
+        {
+
+
+            return View();
+        }
+
+        [HttpPost]
         public ActionResult SendMessage(int id, string message)
         {
             var currentUser = OnlineUsers.GetSessionUser();
