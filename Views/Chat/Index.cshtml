@@ -1,4 +1,4 @@
-﻿@model ChatManager.Models.User
+﻿@model IEnumerable<ChatManager.Models.User>
 
 @{
     ViewBag.Title = "Index";
@@ -12,15 +12,61 @@
 <div class="main">
     <div style="display: grid; grid-template-columns: 60px auto; column-gap: 10px;">
         <div class="friendsListContainer" id="friendListContainer">
-
+            @foreach (var item in Model)
+            {
+                if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
+                {
+                   <div class="FriendAvatar" title="@item.FirstName @item.LastName" >
+                       @Helper.AvatarUser(item, "UserSmallAvatar", true)
+                   </div>
+                }
+            }
         </div>
         <div>
             <div class="messagesPanel" id="messagePanel">
                 <div class="messagesHeader">
-                    <h4>Sélectionnez un ami.</h4>
+                    <h4 id="Selected">Sélectionnez un ami.</h4>
                 </div>
             </div>
             <div class="sendMessageLayout"></div>
         </div>
     </div>
 </div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script defer>
+        function HideFriendBorder() {
+            $('.FriendAvatar').each(function () {
+                $(this).removeClass("SelectedFriend")
+            });
+        }
+
+        function ShowSelectedFriend(name, avatar) {
+            var $contentContainer = $("<div>").addClass("avatar-content-container");
+            avatar.css("display", "inline-block"); 
+            avatar.css("margin-top", "10px"); 
+
+            $contentContainer.append(avatar);
+            $contentContainer.append($("<span>").text(" " + name));
+
+            $("#Selected").empty().append("Conversation avec ", $contentContainer);
+
+            
+        }
+
+        $(".FriendAvatar").click(function () {
+            HideFriendBorder();
+
+            $(this).toggleClass("SelectedFriend")
+
+            var avatarClone = $(this).children().clone();
+            var friendName = $(this).attr("title");
+
+            ShowSelectedFriend(friendName, avatarClone);
+        })
+       
+    </script>
+}

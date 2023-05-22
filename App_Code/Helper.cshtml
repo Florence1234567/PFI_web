@@ -8,13 +8,17 @@
              style="background: url(@avatarUrl)"></div>
     </a>
 }
-@helper AvatarUser(ChatManager.Models.User user, string avatarClass = "UserMediumAvatar")
+@helper AvatarUser(ChatManager.Models.User user, string avatarClass = "UserMediumAvatar", bool noName = false)
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
     var avatarUrl = Url.Content(user.GetAvatarURL());
+    
     <div class="userItem">
         <div class="@avatarClass" style="background: url(@avatarUrl)"></div>
-        <div class="ellipsis">@user.GetFullName()</div>
+        @if (!noName)
+        {
+            <div class="ellipsis">@user.GetFullName()</div>
+        }
     </div>
 }
 @helper UsersCheckList(IEnumerable<ChatManager.Models.User> users, List<int> selectedUsers, string usersCheckListName = "UsersCheckList")

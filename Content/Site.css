@@ -326,6 +326,8 @@ input[type=checkbox] {
     background-repeat: no-repeat !important;
 }
 
+
+
 .userItem {
     display: flex;
     column-gap: 8px;
@@ -374,7 +376,24 @@ input[type=checkbox] {
     border-radius: 6px;
     height: 69vh;
     overflow: scroll;
+    align-content: center;
+    align-items: center;
     padding: 5px;
+}
+
+.FriendAvatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom:10px;
+}
+
+.SelectedFriend {
+    padding:2px;
+    border-color: green;
+    border-width: 10px;
+    border-radius: 1000px;
+    border: 4px solid green;
 }
 
 .messagesPanel {

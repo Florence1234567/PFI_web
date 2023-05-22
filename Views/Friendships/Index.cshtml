@@ -51,8 +51,8 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <script defer>
-       
+<script defer>
+
         $("#SearchButton").click(() => {
             var searchText = $("#Search").val().toLowerCase();
 
@@ -71,5 +71,12 @@
             window.location = "@Url.Action("SetFriendshipStatus")" + "/" + $("#Category").val();
         })
 
-    </script>
+        $("#addOrRemoveFriend").click(() => {
+            console.log("friends");
+            var url = $(this).data('url');
+            window.location.href = url;
+
+        })
+
+</script>
 }

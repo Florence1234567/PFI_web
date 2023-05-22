@@ -12,7 +12,7 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
-            return View();
+            return View(DB.Users.ToList());
         }
     }
 }

@@ -29,5 +29,13 @@ namespace ChatManager.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public ActionResult SendFriendRequest(int friendId)
+        {
+            var user = DB.Users.FindUser(friendId);
+
+            return RedirectToAction("Index");
+        }
+
     }
 }
