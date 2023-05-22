@@ -15,7 +15,6 @@
     <span id="SearchButton" class="icon fa fa-search" style="padding-left: 10px;"></span>
 </div>
 <div class="friendfilters">
-
     <input type="checkbox" id="FilterNotFriend" class="filter" checked />
     <label for="FilterNotFriend" class="fa green fa-plus-circle" title="Afficher/Masqer les usagers qui ne sont pas encore ami avec vous."></label>
     <input type="checkbox" id="FilterRequest" class="filter" checked />
@@ -24,7 +23,7 @@
     <label for="FilterPending" class="fa green fa-clock-o" title="Afficher/Masqer les usagers a qui vous avez envoyé une demande d'ami"></label>
     <input type="checkbox" id="FilterFriend" class="filter" checked />
     <label for="FilterFriend" class="fa green fa-check-circle" title="Afficher/Masqer les usagers qui sont ami avec vous."></label>
-    <input type="checkbox" id="FilterBlocked" class="filter" checked />
+    <input type="checkbox" id="FilterDenied" class="filter" checked />
     <label for="FilterDeclined" class="fa red fa-times-circle" title="Afficher/Masqer les usagers qui vous ont bloqué."></label>
     <input type="checkbox" id="FilterBlocked" class="filter" checked />
     <label for="FilterBlocked" class="fa red fa-ban" title="Afficher/Masqer les usagers qui vous ont bloqué."></label>
@@ -41,6 +40,48 @@
                     @Helper.AvatarUser(item, "UserSmallAvatar")
                 </a>
                 @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+
+                @{
+                    if (item.Status == 0)
+                    {
+                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                            <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
+                        </a>
+                    }
+                    else if (item.Status == 1)
+                    {
+                        <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
+                            <div style="display:inline;">
+                                <span class="fa green fa-check icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
+                                <span class="fa red fa-times icon" title="Refuser la demande d'ami de @item.GetFullName(false)"></span>
+                            </div>
+                        </a>
+                    }
+                    else if (item.Status == 2)
+                    {
+                        <span class="fa green fa-clock-o icon" title="En attente de  @item.GetFullName(false)"></span>
+                        <span class="fa red fa-times icon" title="Retirer la demande d'ami à @item.GetFullName(false)"></span>
+
+                    }
+                    else if (item.Status == 3)
+                    {
+                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                            <span class="fa red fa-times-circle icon" title="Envoyer une demande d'ami à @item.GetFullName()"></span>
+                        </a>
+                    }
+                    else if (item.Status == 4)
+                    {
+                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                            <span class="fa red fa-times-circle icon" title="Envoyer une demande d'ami à @item.GetFullName()"></span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                            <span class="fa red fa-ban icon" title="Envoyer une demande d'ami à @item.GetFullName()"></span>
+                        </a>
+                    }
+                }
             </div>
         }
     }
@@ -51,8 +92,8 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-<script defer>
-
+    <script defer>
+        let status = new PartialRefresh()
         $("#SearchButton").click(() => {
             var searchText = $("#Search").val().toLowerCase();
 
