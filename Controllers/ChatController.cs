@@ -19,5 +19,11 @@ namespace ChatManager.Controllers
 
             return View(users);
         }
+
+        public ActionResult SendMessage()
+        {
+
+            return View();
+        }
     }
 }

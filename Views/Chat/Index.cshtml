@@ -16,7 +16,7 @@
             {
                 if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
                 {
-                   <div class="FriendAvatar" title="@item.FirstName @item.LastName" >
+                   <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id" >
                        @Helper.AvatarUser(item, "UserSmallAvatar", true)
                    </div>
                 }
@@ -28,7 +28,11 @@
                     <h4 id="Selected">Sélectionnez un ami.</h4>
                 </div>
             </div>
-            <div class="sendMessageLayout"></div>
+            <div class="sendMessageLayout">
+                <input id="message" class="form-control" style="width:100% !important; max-width:1000px !important;" placeholder="Tapez votre message ici ..." title="Les urls d'image sont prises en compte.">
+                <span id="send" class="icon fa fa-paper-plane" title="Envoyer" data-placement="bottom"></span>
+                
+            </div>
         </div>
     </div>
 </div>
@@ -38,9 +42,16 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script defer>
+        $("#message").hide();
+
+
+        function SendMessage() {
+
+        }
+
         function HideFriendBorder() {
             $('.FriendAvatar').each(function () {
-                $(this).removeClass("SelectedFriend")
+                $(this).removeClass("selectedTarget")
             });
         }
 
@@ -53,18 +64,27 @@
             $contentContainer.append($("<span>").text(" " + name));
 
             $("#Selected").empty().append("Conversation avec ", $contentContainer);
+
+            $("#message").show();
         }
 
-        $(".FriendAvatar").click(function () {
+
+
+        $(".unselectedTarget").click(function () {
             HideFriendBorder();
 
-            $(this).toggleClass("SelectedFriend")
+            $(this).toggleClass("selectedTarget")
+            $(this).removeClass("unselectedTarget")
 
             var avatarClone = $(this).children().clone();
             var friendName = $(this).attr("title");
 
             ShowSelectedFriend(friendName, avatarClone);
         })
+
+        $("#send").click(function ()) {
+            SendMessage();
+        }
        
     </script>
 }
