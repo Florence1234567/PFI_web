@@ -318,6 +318,7 @@ namespace ChatManager.Controllers
             user.Blocked = currentUser.Blocked;
             user.Avatar = currentUser.Avatar;
             user.CreationDate = currentUser.CreationDate;
+            user.GenderId = currentUser.GenderId;
 
             string newEmail = "";
             if (ModelState.IsValid)
