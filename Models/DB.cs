@@ -28,7 +28,7 @@ namespace ChatManager.Models
         public static Repository<Login> Logins { get; set; }
 
         public static Repository<ChatMessage> ChatMessages { get; set; }
-        public static Repository<Friendship> Friendships { get; set; }
+        public static FriendshipRepository Friendships { get; set; }
         public static UsersRepository Users { get; set; }
         #endregion
         #region initialization
@@ -41,7 +41,6 @@ namespace ChatManager.Models
             Logins = new Repository<Login>();
             ChatMessages = new Repository<ChatMessage>();
 
-            Friendships = new Repository<Friendship> ();
             Users = new UsersRepository();
             InitRepositories(this);
         }

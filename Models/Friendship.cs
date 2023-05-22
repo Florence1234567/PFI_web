@@ -4,6 +4,11 @@ namespace ChatManager.Models
 {
     public class Friendship
     {
+        public Friendship()
+        {
+
+        }
+
         public Friendship(int idUser1, int idUser2)
         {
             IdUser1 = idUser1;
