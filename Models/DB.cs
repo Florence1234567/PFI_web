@@ -26,8 +26,7 @@ namespace ChatManager.Models
         public static Repository<UnverifiedEmail> UnverifiedEmails { get; set; }
         public static Repository<ResetPasswordCommand> ResetPasswordCommands { get; set; }
         public static Repository<Login> Logins { get; set; }
-
-        public static Repository<ChatMessage> ChatMessages { get; set; }
+        public static ChatMessageRepository ChatMessages { get; set; }
         public static FriendshipRepository Friendships { get; set; }
         public static UsersRepository Users { get; set; }
         #endregion
@@ -39,8 +38,8 @@ namespace ChatManager.Models
             UnverifiedEmails = new Repository<UnverifiedEmail>();
             ResetPasswordCommands = new Repository<ResetPasswordCommand>();
             Logins = new Repository<Login>();
-            ChatMessages = new Repository<ChatMessage>();
-
+            ChatMessages = new ChatMessageRepository();
+            Friendships = new FriendshipRepository();
             Users = new UsersRepository();
             InitRepositories(this);
         }
