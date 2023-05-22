@@ -12,7 +12,7 @@ namespace ChatManager.Controllers
         [HttpPost]
         public JsonResult GetFriendshipStatus(int Id)
         {
-            return Json(DB.Users.);
+            return Json(DB.Users);
         }
 
         [OnlineUsers.UserAccess]

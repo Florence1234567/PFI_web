@@ -340,6 +340,8 @@ namespace ChatManager.Models
         }
         public User AddFriendship(int IdUser, string status)
         {
+            User user = DB.Users.FindUser(IdUser);
+
             try
             {
                 Friendships friendships = new Friendships();
