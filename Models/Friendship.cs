@@ -10,7 +10,14 @@ namespace ChatManager.Models
             IdUser2 = idUser2;
             Status = 0;
         }
+<<<<<<< Updated upstream
 
+=======
+        public Friendship Clone()
+        {
+            return JsonConvert.DeserializeObject<Friendship>(JsonConvert.SerializeObject(this));
+        }
+>>>>>>> Stashed changes
         public int Id { get; set; }
         public int IdUser1 { get; set; }
         public int IdUser2 { get; set; }
