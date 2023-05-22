@@ -11,9 +11,9 @@ namespace ChatManager.Controllers
     public class FriendshipsController : Controller
     {
         [HttpPost]
-        public JsonResult GetFriendshipStatus(int id)
+        public void GetFriendshipStatus(int id)
         {
-            return Json(DB.Users.FindUser(id).Status);
+            //return Json(DB.Friendships.Get().FindUser(id).Status);
         }
 
         [OnlineUsers.UserAccess]
@@ -21,6 +21,8 @@ namespace ChatManager.Controllers
         {
             /*if (Session["FriendshipFilter"] == null)
                 Session["FriendshipFilter"] = "NotFriend";*/
+            ViewBag.Friendships = SelectListUtilities<Friendship>.Convert(DB.Friendships.ToList());
+
             return View(DB.Users.ToList());
         }
         public ActionResult SetFriendshipFilter(int id)
@@ -31,15 +33,9 @@ namespace ChatManager.Controllers
 
         public ActionResult SendFriendshipRequest(int id)
         {
-            User currentUser = OnlineUsers.GetSessionUser();
-            currentUser.Status = 2;
-            DB.Users.Update(currentUser);
+            DB.Friendships.Add(new Friendship(OnlineUsers.GetSessionUser().Id, id));
 
-            User user = DB.Users.FindUser(id);
-            user.Status = 1;
-            DB.Users.Update(user);
-
-            return RedirectToAction("Index");
+            return View();
         }
     }
 }
