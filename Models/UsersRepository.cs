@@ -337,22 +337,5 @@ namespace ChatManager.Models
                 return false;
             }
         }
-        public User AddFriendship(int IdUser, string status)
-        {
-            User user = DB.Users.FindUser(IdUser);
-
-            try
-            {
-                Friendships friendships = new Friendships();
-                friendships.IdUser = IdUser;
-                friendships.Status = status;
-            }
-            catch (Exception ex)
-            {
-                user.RemoveAvatar();
-                System.Diagnostics.Debug.WriteLine($"Add user failed : Message - {ex.Message}");
-            }
-            return null;
-        }
     }
 }

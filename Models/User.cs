@@ -11,7 +11,7 @@ namespace ChatManager.Models
     {
         public User()
         {
-            Status = "NotFriends";
+            Status = 0;
             Blocked = false;
             Verified = false;
             UserTypeId = 3;
@@ -27,7 +27,7 @@ namespace ChatManager.Models
         public int UserTypeId { get; set; }
         public bool Verified { get; set; }
         public bool Blocked { get; set; }
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         [Display(Name = "Prenom"), Required(ErrorMessage = "Obligatoire")]
         public string FirstName { get; set; }
