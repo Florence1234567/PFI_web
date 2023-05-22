@@ -10,9 +10,9 @@ namespace ChatManager.Controllers
     public class FriendshipsController : Controller
     {
         [HttpPost]
-        public JsonResult GetFriendshipStatus(int Id)
+        public JsonResult GetFriendshipStatus(int id)
         {
-            return Json(DB.Users.);
+            return Json(DB.Users.FindUser(id).Status);
         }
 
         [OnlineUsers.UserAccess]
