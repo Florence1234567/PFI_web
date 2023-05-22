@@ -43,7 +43,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script defer>
         $("#message").hide();
-
+        $("#send").hide();
 
         function SendMessage() {
 
@@ -51,7 +51,8 @@
 
         function HideFriendBorder() {
             $('.FriendAvatar').each(function () {
-                $(this).removeClass("selectedTarget")
+                $(this).removeClass("selectedTarget");
+                $(this).toggleClass("unselectedTarget");
             });
         }
 
@@ -66,17 +67,20 @@
             $("#Selected").empty().append("Conversation avec ", $contentContainer);
 
             $("#message").show();
+            $("#send").show();
         }
-
 
 
         $(".unselectedTarget").click(function () {
             HideFriendBorder();
 
-            $(this).toggleClass("selectedTarget")
-            $(this).removeClass("unselectedTarget")
+            $(this).toggleClass("selectedTarget");
+            $(this).removeClass("unselectedTarget");
 
             var avatarClone = $(this).children().clone();
+            avatarClone.removeClass("UserSmallAvatar");
+            avatarClone.toggleClass("UserMediumAvatar");
+
             var friendName = $(this).attr("title");
 
             ShowSelectedFriend(friendName, avatarClone);
