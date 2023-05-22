@@ -6,7 +6,7 @@
     {
         bool isOnline = ChatManager.Models.OnlineUsers.IsOnLine(item.Id);
         <div class="userContainer" style="font-size:14px;">
-            <a id="UserToEdit" href="@Url.Action("SetUserToEdit", "Accounts", new { id = item.Id })">
+            <a id="UserToEdit" href="@Url.Action("ProfilAdmin", "Accounts", new { id = item.Id })">
                 @Helper.AvatarUser(item, "UserSmallAvatar")
             </a>
             <div style="text-align:center" title="Status de connexion">

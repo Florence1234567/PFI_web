@@ -19,9 +19,9 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
-            if (Session["FriendshipFilter"] == null)
-                Session["FriendshipFilter"] = "NotFriend";
-            return View(DB.Users.ToList().OrderBy(m => m.FirstName).ThenBy(m => m.LastName).Where(m => m.Status == (string)Session["FriendshipFilter"]));
+            /*if (Session["FriendshipFilter"] == null)
+                Session["FriendshipFilter"] = "NotFriend";*/
+            return View(DB.Users.ToList());
         }
         public ActionResult SetFriendshipFilter(int id)
         {

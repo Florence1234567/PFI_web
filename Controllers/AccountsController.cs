@@ -240,8 +240,9 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Profil()
         {
-            OnlineUsers.GetSessionUser().AcceptNotification = true;
             ViewBag.Genders = SelectListUtilities<Gender>.Convert(DB.Genders.ToList());
+
+            OnlineUsers.GetSessionUser().AcceptNotification = true;
             User userToEdit = OnlineUsers.GetSessionUser().Clone();
             if (userToEdit != null)
             {
@@ -252,23 +253,7 @@ namespace ChatManager.Controllers
             return null;
         }
 
-        public ActionResult ProfilAdmin()
-        {
-            ViewBag.Genders = SelectListUtilities<Gender>.Convert(DB.Genders.ToList());
-            User userToEdit = DB.Users.FindUser((int)Session["UserToEdit"]);
-            if (userToEdit != null)
-            {
-                return View(userToEdit);
-            }
-            return null;
-        }
-
-        public ActionResult SetUserToEdit(int id)
-        {
-            Session["UserToEdit"] = id;
-            return RedirectToAction("ProfilAdmin");
-        }
-
+     
         [HttpPost]
         [ValidateAntiForgeryToken()]
         public ActionResult Profil(User user)
@@ -307,6 +292,56 @@ namespace ChatManager.Controllers
                     return RedirectToAction("Report", "Errors", new { message = "Échec de modification de profil" });
             }
             ViewBag.Genders = SelectListUtilities<Gender>.Convert(DB.Genders.ToList());
+            return View(currentUser);
+        }
+
+        public ActionResult ProfilAdmin(int id)
+        {
+            Session["UserToEdit"] = id;
+
+            ViewBag.UserType = SelectListUtilities<UserType>.Convert(DB.UserTypes.ToList());
+            User userToEdit = DB.Users.FindUser(id);
+            if (userToEdit != null)
+                return View(userToEdit);
+
+            return null;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken()]
+        public ActionResult ProfilAdmin(User user)
+        {
+            User currentUser = DB.Users.FindUser((int)Session["UserToEdit"]);
+            user.Id = currentUser.Id;
+            user.Verified = currentUser.Verified;
+            user.UserTypeId = currentUser.UserTypeId;
+            user.Blocked = currentUser.Blocked;
+            user.Avatar = currentUser.Avatar;
+            user.CreationDate = currentUser.CreationDate;
+
+            string newEmail = "";
+            if (ModelState.IsValid)
+            {
+                if (user.Email != currentUser.Email)
+                {
+                    newEmail = user.Email;
+                    user.Email = user.ConfirmEmail = currentUser.Email;
+                }
+
+                if (DB.Users.Update(user))
+                {
+                    if (newEmail != "")
+                    {
+                        SendEmailChangedVerification(user, newEmail);
+                        return RedirectToAction("EmailChangedAlert");
+                    }
+                    else
+                        return RedirectToAction("UserList", "Accounts");
+                }
+                else
+                    return RedirectToAction("Report", "Errors", new { message = "Échec de modification de profil" });
+            }
+            ViewBag.UserType = SelectListUtilities<UserType>.Convert(DB.UserTypes.ToList());
             return View(currentUser);
         }
         #endregion

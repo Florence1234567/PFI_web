@@ -32,7 +32,6 @@
             @Html.ValidationMessageFor(model => model.GenderId, "", new { @class = "text-danger" })
         </fieldset>
 
-
         <fieldset class="formField">
             <div class="legend">@Html.DisplayNameFor(model => model.Email)</div>
             @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = @Html.DisplayNameFor(model => model.Email) } })
