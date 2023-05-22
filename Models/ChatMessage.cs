@@ -7,6 +7,7 @@ namespace ChatManager.Models
 {
     public class ChatMessage
     {
+        public ChatMessage() { }
         public ChatMessage(int idUser1, int idUser2, string message)
         {
             Sender = idUser1;
