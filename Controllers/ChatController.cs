@@ -22,23 +22,19 @@ namespace ChatManager.Controllers
         }
 
 
-        [HttpGet]
         public ActionResult GetMessages(int id)
         {
-            
+            var chatMessages = DB.ChatMessages.ToList().Where(message => message.Sender == id || message.Receiver == id).ToList();
 
-
-            return View();
+            return View(chatMessages);
         }
 
         [HttpPost]
         public ActionResult SendMessage(int id, string message)
         {
-            var currentUser = OnlineUsers.GetSessionUser();
+            DB.ChatMessages.Create(new ChatMessage(OnlineUsers.GetSessionUser().Id, id, message));
 
-            var user = DB.Users; 
-
-            return View();
+            return RedirectToAction("Index");
         }
     }
 }
