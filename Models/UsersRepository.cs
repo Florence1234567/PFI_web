@@ -337,17 +337,5 @@ namespace ChatManager.Models
                 return false;
             }
         }
-
-        public void AddFriendship(int idUser1, int idUser2)
-        {
-            try
-            {
-                Friendship friendship = new Friendship(idUser1, idUser2);  
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Add friendship failed : Message - {ex.Message}");
-            }
-        }
     }
 }
