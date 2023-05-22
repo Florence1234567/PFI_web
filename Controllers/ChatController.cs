@@ -19,5 +19,14 @@ namespace ChatManager.Controllers
 
             return View(users);
         }
+
+        public ActionResult SendMessage(int id, string message)
+        {
+            var currentUser = OnlineUsers.GetSessionUser();
+
+            var user = DB.Users; 
+
+            return View();
+        }
     }
 }
