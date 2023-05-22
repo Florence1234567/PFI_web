@@ -7,10 +7,8 @@ namespace ChatManager.Models
 {
     public class Friendship
     {
-        public Friendship(int idUser1, int idUser2)
+        public Friendship()
         {
-            IdUser1 = idUser1;
-            IdUser2 = idUser2;
             Status = 0;
         }
 

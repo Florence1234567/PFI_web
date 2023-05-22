@@ -349,17 +349,5 @@ namespace ChatManager.Models
                 System.Diagnostics.Debug.WriteLine($"Add friendship failed : Message - {ex.Message}");
             }
         }
-
-        public void UpdateFriendship(int idUser1, int idUser2, int status)
-        {
-            try
-            {
-                Friendship friendship = new Friendship(idUser1, idUser2);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Add friendship failed : Message - {ex.Message}");
-            }
-        }
     }
 }
