@@ -40,14 +40,12 @@
                     @Helper.AvatarUser(item, "UserSmallAvatar")
                 </a>
                 @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
-                
+
                 @{
-                    if (@ViewBag.Friendships == 0)
-                    {
-                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                            <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
-                        </a>
-                    }
+
+                    <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                        <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
+                    </a>
                     /*else if (item.Status == 1)
                     {
                         <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
@@ -100,7 +98,7 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-<script defer>
+    <script defer>
         let status = new PartialRefresh("/Friendships/GetFriendShipsStatus", "friendshipsListContainer", 5, UpdatefriendShipsCallback)
         $("#SearchButton").click(() => {
             var searchText = $("#Search").val().toLowerCase();
@@ -129,5 +127,5 @@
             });
 
         }
-</script>
+    </script>
 }
