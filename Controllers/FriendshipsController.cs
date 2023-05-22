@@ -31,7 +31,7 @@ namespace ChatManager.Controllers
 
         public ActionResult SendFriendshipRequest(int id)
         {
-            //DB.Friendships.AddFriendship(OnlineUsers.GetSessionUser().Id, id);
+            DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id));
 
             return RedirectToAction("Index");
         }
