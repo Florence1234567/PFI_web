@@ -37,8 +37,9 @@ namespace ChatManager.Models
             UnverifiedEmails = new Repository<UnverifiedEmail>();
             ResetPasswordCommands = new Repository<ResetPasswordCommand>();
             Logins = new Repository<Login>();
-            Friendships = new FriendshipRepository();
+
             Users = new UsersRepository();
+            Friendships = new FriendshipRepository();
             InitRepositories(this);
         }
         private static void InitRepositories(DB db)

@@ -14,6 +14,7 @@ namespace ChatManager.Models
             Message = message;
         }
 
+        public int Id { get; set; }
         public int Sender { get; set; }
         public int Receiver { get; set; }
         public string Message { get; set; }
