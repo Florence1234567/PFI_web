@@ -120,18 +120,23 @@
         }
 
         function DeleteMessage(id) {
-            $.ajax({
-                url: "/Chat/DeleteMessage",
-                type: "POST",
-                data: { id: id },
-                success: function (response) {
-                    var messageSent = $("#sent_" + id);
-                    messageSent.hide();
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.log("Error editing message: " + errorThrown);
-                }
-            });
+            var confirmationMessage = "Are you sure you want to delete this message?";
+            var confirmed = confirm(confirmationMessage);
+            if (confirmed) {
+                $.ajax({
+                    url: "/Chat/DeleteMessage",
+                    type: "POST",
+                    data: { id: id },
+                    success: function (response) {
+                        var messageSent = $("#sent_" + id);
+                        messageSent.remove();
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log("Error editing message: " + errorThrown);
+                    }
+                });
+            }
+            
         }
 
         function EditMessage(id, editedMessage) {
@@ -146,6 +151,13 @@
                     var messageSent = $("#sent_" + id);
                     messageSent.show();
                     $("#sent_" + id).text(editedMessage)
+                    ShowMessages($(".selectedTarget").data("user-id"), $('.selectedTarget'));
+                    if (editedMessage.length > 30) {
+                        $("#sent_" + id).addClass("truncate-text");
+                        $("#sent_" + id).attr("title", editedMessage)
+                    } else {
+                        $("#sent_" + id).removeClass("truncate-text");
+                    }
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     console.log("Error editing message: " + errorThrown);
@@ -172,6 +184,10 @@
             remove.click(function () {
                 DeleteMessage(id);
                 edit.hide();
+                var messageSent = $("#sent_" + id);
+                if (messageSent) {
+                    messageSent.show();
+                }
             })
         }
 
@@ -186,6 +202,9 @@
 
                     $(".sent").click(function () {
                         if (!$(this).hasClass("form-control")) {
+                            $(".editMessage").hide();
+                            $(".sent").show();
+
                             ShowEditMessage($(this));
                         }
                     })
