@@ -280,6 +280,8 @@
     <Content Include="Views\Friendships\RemoveFriendshipRequest.cshtml" />
     <Content Include="Views\Chat\SetMessagedUserId.cshtml" />
     <Content Include="Views\Friendships\GetFriendshipStatus.cshtml" />
+    <Content Include="Views\Chat\DeleteMessage.cshtml" />
+    <Content Include="Views\Chat\SendMessage - Copier.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

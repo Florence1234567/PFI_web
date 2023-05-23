@@ -16,14 +16,27 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
-            //var users = DB.Users.ToList().Where(user => user.Status == 3)
-            //                           .OrderBy(user => user.Status)
-            //                           .ToList();
+            var users = new List<User>();
+
+            var currentId = OnlineUsers.GetSessionUser().Id;
+
+            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == currentId
+            || m.IdUser2 == currentId);
+
+            foreach (var friendship in friendships)
+            {
+                if(friendship.IdUser1 != currentId)
+                {
+                    users.Add(DB.Users.Get(friendship.IdUser1));
+                }
+                else
+                {
+                    users.Add(DB.Users.Get(friendship.IdUser2));
+                }
+            }
 
             var chatMessages = DB.ChatMessages.ToList().Where(message =>
             message.Sender == 0).ToList();
-
-            var users = DB.Users.ToList();
 
             var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
 
@@ -79,7 +92,12 @@ namespace ChatManager.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
+        public ActionResult DeleteMessage()
+        {
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
         public ActionResult DeleteMessage(int id)
         {
             DB.ChatMessages.Delete(id);
