@@ -20,6 +20,14 @@ body {
     white-space: normal;
 }
 
+.truncate-text {
+    display: inline-block;
+    width: 100px; /* Adjust the width according to your needs */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,

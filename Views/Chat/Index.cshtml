@@ -1,8 +1,9 @@
 ﻿@model IEnumerable<ChatManager.Models.User>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "ChatRoom";
 }
+
 
 <div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
     <img src="~/favicon.png" style="width: 56px;" />
@@ -16,9 +17,9 @@
             {
                 if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
                 {
-                   <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id" >
-                       @Helper.AvatarUser(item, "UserSmallAvatar", true)
-                   </div>
+                    <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id">
+                        @Helper.AvatarUser(item, "UserSmallAvatar", true)
+                    </div>
                 }
             }
         </div>
@@ -27,11 +28,19 @@
                 <div class="messagesHeader">
                     <h4 id="Selected">Sélectionnez un ami.</h4>
                 </div>
+                @if (ViewBag.Messages != null)
+                {
+                    <span>HELLLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOOOOO</span>
+                    foreach (var item in ViewBag.Messages)
+                    {
+                        @Helper.ParseContent(item.Message)
+                    }
+                }
+
             </div>
             <div class="sendMessageLayout">
                 <input id="message" class="form-control" style="width:100% !important; max-width:1000px !important;" placeholder="Tapez votre message ici ..." title="Les urls d'image sont prises en compte.">
                 <span id="send" class="icon fa fa-paper-plane" title="Envoyer" data-placement="bottom"></span>
-                
             </div>
         </div>
     </div>
@@ -41,34 +50,43 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <script defer>
+<script defer>
         $("#message").hide();
         $("#send").hide();
 
-        // MESSAGES 
+        // MESSAGES
 
-        function SendMessage() {
-
+        function SendMessage(userId) {
+            //sending the message
+;            $.ajax({
+                url: "/Chat/SendMessage",
+                type: "POST",
+                data: { id: userId, message: $("#message").val() },
+                success: function (response) {
+                    console.log("Message sent: " + $("#message").val());
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error sending message: " + errorThrown);
+                }
+            });
+            // Clear the message input
             $("#message").val("");
         }
 
         function ShowMessages(userId) {
+
             $.ajax({
-                url: "/ChatController/GetMessages",
+                url: "/Chat/GetMessagesViewBag",
                 type: "GET",
-                data: { id: userId }
-                success: function (data) {
-
-                    for (var i = 0; i < data.length; i++) {
-                        var message = data[i];
-                        console.log(message);
-
-                    }
+                data: { id: userId },
+                success: function (response) {
+                    console.log(response);
+                    console.log(@ViewBag);
+                    console.log(@ViewBag.Messages);
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log("ERREUR" + errorThrown);
+                    console.log("Error sending message: " + errorThrown);
                 }
-
             });
         }
 
@@ -81,8 +99,8 @@
 
         function ShowSelectedFriend(name, avatar) {
             var $contentContainer = $("<div>").addClass("avatar-content-container");
-            avatar.css("display", "inline-block"); 
-            avatar.css("margin-top", "10px"); 
+            avatar.css("display", "inline-block");
+            avatar.css("margin-top", "10px");
 
             $contentContainer.append(avatar);
             //$contentContainer.append($("<div>").text(" " + name));
@@ -105,6 +123,7 @@
             $(this).addClass("selectedTarget");
             $(this).removeClass("unselectedTarget");
 
+            //update header
             var avatarClone = $(this).find(".UserSmallAvatar").clone();
             avatarClone.removeClass("UserSmallAvatar");
             avatarClone.addClass("UserMediumAvatar");
@@ -112,13 +131,23 @@
             var friendName = $(this).attr("title");
 
             ShowSelectedFriend(friendName, avatarClone);
+
+            //update message panel
+            ShowMessages($(".selectedTarget").data("user-id"));
         })
 
         $("#send").click(function () {
-            SendMessage();
-            console.log($("selectedTarget").userId);
-            ShowMessages($("selectedTarget").userId);
+            var userId = $(".selectedTarget").data("user-id");
+
+            SendMessage(userId);
+            ShowMessages(userId);
         })
-       
-    </script>
+
+        $(document).keydown(function (event) {
+            if (event.keyCode === 27) {
+                $("#message").val("");
+            }
+        });
+
+</script>
 }
