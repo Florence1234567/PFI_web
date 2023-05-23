@@ -32,7 +32,7 @@ namespace ChatManager.Controllers
 
         public ActionResult SendFriendshipRequest(int id)
         {
-            DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id, OnlineUsers.GetSessionUser().Id));
+            DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id));
 
             return RedirectToAction("Index");
         }
