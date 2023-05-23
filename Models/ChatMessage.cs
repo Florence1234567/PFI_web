@@ -13,13 +13,13 @@ namespace ChatManager.Models
             Sender = idUser1;
             Receiver = idUser2;
             Message = message;
-            DateTime = DateTime.Now;
+            Date = DateTime.Now.ToString("dd MMMM yyyy - HH:mm");
         }
 
         public int Id { get; set; }
         public int Sender { get; set; }
         public int Receiver { get; set; }
         public string Message { get; set; }
-        public DateTime DateTime { get; set; }
+        public string Date { get; set; }
     }
 }

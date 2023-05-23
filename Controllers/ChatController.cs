@@ -1,7 +1,9 @@
 ﻿using ChatManager.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Services.Description;
@@ -24,9 +26,13 @@ namespace ChatManager.Controllers
         [HttpGet]
         public ActionResult GetMessages(int id)
         {
-            var chatMessages = DB.ChatMessages.ToList().Where(message => message.Sender == id || message.Receiver == id).ToList();
+            var currentId = OnlineUsers.GetSessionUser().Id;
 
-            return Json(chatMessages);
+            var chatMessages = DB.ChatMessages.ToList().Where(message => 
+            message.Sender == currentId && message.Receiver == id ||
+            message.Sender == id && message.Receiver == currentId).ToList();
+
+            return Json(chatMessages, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -35,6 +41,17 @@ namespace ChatManager.Controllers
             DB.ChatMessages.Create(new ChatMessage(OnlineUsers.GetSessionUser().Id, id, message));
 
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult UpdateMessage([FromBody] dynamic data)
+        {
+            string newMessage = data.message;
+
+            // Update the message variable
+            message = newMessage;
+
+            return Ok();
         }
     }
 }

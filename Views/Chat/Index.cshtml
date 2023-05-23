@@ -1,7 +1,10 @@
 ﻿@model IEnumerable<ChatManager.Models.User>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "ChatRoom";
+}
+@{
+    string message = "Your message here";
 }
 
 <div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
@@ -16,9 +19,9 @@
             {
                 if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
                 {
-                   <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id" >
-                       @Helper.AvatarUser(item, "UserSmallAvatar", true)
-                   </div>
+                    <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id">
+                        @Helper.AvatarUser(item, "UserSmallAvatar", true)
+                    </div>
                 }
             }
         </div>
@@ -31,7 +34,6 @@
             <div class="sendMessageLayout">
                 <input id="message" class="form-control" style="width:100% !important; max-width:1000px !important;" placeholder="Tapez votre message ici ..." title="Les urls d'image sont prises en compte.">
                 <span id="send" class="icon fa fa-paper-plane" title="Envoyer" data-placement="bottom"></span>
-                
             </div>
         </div>
     </div>
@@ -45,28 +47,90 @@
         $("#message").hide();
         $("#send").hide();
 
-        // MESSAGES 
+        // MESSAGES
 
-        function SendMessage() {
-
+        function SendMessage(userId) {
+            //sending the message
+;            $.ajax({
+                url: "/Chat/SendMessage",
+                type: "POST",
+                data: { id: userId, message: $("#message").val() },
+                success: function (response) {
+                    console.log("Message sent: " + $("#message").val());
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error sending message: " + errorThrown);
+                }
+            });
+            // Clear the message input
             $("#message").val("");
         }
 
         function ShowMessages(userId) {
+
             $.ajax({
-                url: "/ChatController/GetMessages",
+                url: "/Chat/GetMessages",
                 type: "GET",
-                data: { id: userId }
+                data: { id: userId },
                 success: function (data) {
 
-                    for (var i = 0; i < data.length; i++) {
-                        var message = data[i];
-                        console.log(message);
+                    $(".messagesPanel").find(".sentLayout").remove();
+                    $(".messagesPanel").find(".receivedLayout").remove();
+                    $(".messagesPanel").find(".messageTime").remove();
 
+                    for (var i = 0; i < data.length; i++) {
+
+                        var messageObject = data[i];
+                        var message = messageObject.Message.toString();
+                        var date = messageObject.Date;
+
+                        // Afficher le temps
+                        if (i == 0) {
+                            var messageTime = $("<div>").addClass("messageTime");
+                            messageTime.text(date);
+                            $(".messagesPanel").append(messageTime);
+                        }
+
+                        var messageLayout = $("<div>");
+
+                        var messageContainer = $("<div>");
+                        messageContainer.attr("title", date);
+
+                        //var messageSpan = $("<span>").addClass("token");
+                        //messageSpan.text(message);
+
+                        if (messageObject.Sender == userId) {
+                            messageLayout.addClass("receivedLayout");
+                            messageContainer.addClass("received");
+                            messageContainer.attr("id", "received_" + messageObject.Id);
+                        }
+                        else {
+                            messageLayout.addClass("sentLayout");
+                            messageContainer.addClass("sent");
+                            messageContainer.attr("id", "sent_" + messageObject.Id);
+                        }
+
+
+                        var helper = (`@@Helper.ParseContent("${message}")`);
+                        console.log(helper);
+
+                        //messageContainer.append(helper);
+                        //var message = messageObject.Message.toString();
+                        //var parsedContent = '@@Helper.ParseContent("https://www.youtube.com/watch?v=OCceWupZ_Ik&ab_channel=MasterCoding")';
+                        //messageContainer.append(parsedContent);
+                        //messageContainer.html = parsedContent;
+                        @message = message;
+
+                         var parsedContent = `@Helper.ParseContent($"{message}")`;
+                        messageContainer.append(parsedContent);
+
+                        $(".messagesPanel").append(messageLayout);
+                        messageLayout.append(messageContainer);
                     }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log("ERREUR" + errorThrown);
+                    console.log("XHR:", xhr);
+                    console.log("Erreur:", errorThrown);
                 }
 
             });
@@ -81,8 +145,8 @@
 
         function ShowSelectedFriend(name, avatar) {
             var $contentContainer = $("<div>").addClass("avatar-content-container");
-            avatar.css("display", "inline-block"); 
-            avatar.css("margin-top", "10px"); 
+            avatar.css("display", "inline-block");
+            avatar.css("margin-top", "10px");
 
             $contentContainer.append(avatar);
             //$contentContainer.append($("<div>").text(" " + name));
@@ -105,6 +169,7 @@
             $(this).addClass("selectedTarget");
             $(this).removeClass("unselectedTarget");
 
+            //update header
             var avatarClone = $(this).find(".UserSmallAvatar").clone();
             avatarClone.removeClass("UserSmallAvatar");
             avatarClone.addClass("UserMediumAvatar");
@@ -112,13 +177,23 @@
             var friendName = $(this).attr("title");
 
             ShowSelectedFriend(friendName, avatarClone);
+
+            //update message panel
+            ShowMessages($(".selectedTarget").data("user-id"));
         })
 
         $("#send").click(function () {
-            SendMessage();
-            console.log($("selectedTarget").userId);
-            ShowMessages($("selectedTarget").userId);
+            var userId = $(".selectedTarget").data("user-id");
+
+            SendMessage(userId);
+            ShowMessages(userId);
         })
-       
+
+        $(document).keydown(function (event) {
+            if (event.keyCode === 27) {
+                $("#message").val("");
+            }
+        });
+
     </script>
 }
