@@ -276,6 +276,8 @@
     <Content Include="Views\Accounts\ProfilAdmin.cshtml" />
     <Content Include="Views\Friendships\SendFriendshipRequest.cshtml" />
     <Content Include="Views\Chat\SendMessage.cshtml" />
+    <Content Include="Views\Friendships\AcceptFriendshipRequest.cshtml" />
+    <Content Include="Views\Friendships\RemoveFriendshipRequest.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

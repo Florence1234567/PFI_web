@@ -47,7 +47,7 @@ namespace ChatManager.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult DeclineFriendshipRequest(int id)
+        public ActionResult RemoveFriendshipRequest(int id)
         {
             var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
             var friendship = DB.Friendships.Get(friendships.First().Id);
