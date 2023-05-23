@@ -19,8 +19,23 @@ namespace ChatManager.Controllers
             //                           .OrderBy(user => user.Status)
             //                           .ToList();
             var users = DB.Users.ToList();
+            ViewBag.Messages = null;
 
             return View(users);
+        }
+
+        [HttpGet]
+        public ActionResult GetMessagesViewBag(int id)
+        {
+            var currentId = OnlineUsers.GetSessionUser().Id;
+
+            var chatMessages = DB.ChatMessages.ToList().Where(message =>
+            message.Sender == currentId && message.Receiver == id ||
+            message.Sender == id && message.Receiver == currentId).ToList();
+
+            ViewBag.Messages = chatMessages;
+
+            return Json(chatMessages, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -32,6 +47,8 @@ namespace ChatManager.Controllers
             message.Sender == currentId && message.Receiver == id ||
             message.Sender == id && message.Receiver == currentId).ToList();
 
+            ViewBag.Messages = chatMessages;
+
             return Json(chatMessages, JsonRequestBehavior.AllowGet);
         }
 
@@ -41,17 +58,6 @@ namespace ChatManager.Controllers
             DB.ChatMessages.Create(new ChatMessage(OnlineUsers.GetSessionUser().Id, id, message));
 
             return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public IActionResult UpdateMessage([FromBody] dynamic data)
-        {
-            string newMessage = data.message;
-
-            // Update the message variable
-            message = newMessage;
-
-            return Ok();
         }
     }
 }
