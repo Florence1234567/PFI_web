@@ -4,6 +4,7 @@
     ViewBag.Title = "Index";
     var i = 0;
     bool listEmpty = true;
+    bool isUser1 = false;
 }
 
 <div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
@@ -50,16 +51,21 @@
                         listEmpty = false;
                         if (friendship.IdUser1 == item.Id || friendship.IdUser2 == item.Id)
                         {
+                            if (friendship.IdUser1)
+                            {
+                                isUser1 = true;
+                            }
+
                             if (friendship.Status == "Request")
                             {
                                 <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
-                                    <div style="display:inline;">
+                                    <div style="display: grid; grid-template-columns: auto;">
                                         <span class="fa green fa-clock-o icon" title="En attente de  @item.GetFullName(false)"></span>
                                         <span class="fa red fa-times icon" title="Retirer la demande d'ami à @item.GetFullName(false)"></span>
                                     </div>
                                 </a>
                             }
-                            else if (friendship.Status == 2)
+                            else if (friendship.Status == "Request")
                             {
 
                                 <div style="display:inline;">
