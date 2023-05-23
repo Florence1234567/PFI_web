@@ -44,18 +44,19 @@
     <script defer>
         $("#message").hide();
         $("#send").hide();
-        ShowMessages();
 
         // MESSAGES 
 
         function SendMessage() {
+
             $("#message").val("");
         }
 
-        function ShowMessages() {
+        function ShowMessages(userId) {
             $.ajax({
-                url: "/Chat/GetMessages",
+                url: "/ChatController/GetMessages",
                 type: "GET",
+                data: { id: userId }
                 success: function (data) {
 
                     for (var i = 0; i < data.length; i++) {
@@ -65,7 +66,7 @@
                     }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log("ERREUR");
+                    console.log("ERREUR" + errorThrown);
                 }
 
             });
@@ -115,7 +116,8 @@
 
         $("#send").click(function () {
             SendMessage();
-            ShowMessages();
+            console.log($("selectedTarget").userId);
+            ShowMessages($("selectedTarget").userId);
         })
        
     </script>

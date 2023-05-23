@@ -1,14 +1,1 @@
-[
-  {
-    "Id": 1,
-    "IdUser1": 9,
-    "IdUser2": 10,
-    "Status": 0
-  },
-  {
-    "Id": 2,
-    "IdUser1": 9,
-    "IdUser2": 10,
-    "Status": 0
-  }
-]
+[{"Id":1,"IdUser1":9,"IdUser2":10,"Status":0},{"Id":2,"IdUser1":9,"IdUser2":10,"Status":0},{"Id":3,"IdUser1":10,"IdUser2":1,"Status":0},{"Id":4,"IdUser1":10,"IdUser2":1,"Status":0},{"Id":5,"IdUser1":10,"IdUser2":1,"Status":0},{"Id":6,"IdUser1":10,"IdUser2":9,"Status":0}]

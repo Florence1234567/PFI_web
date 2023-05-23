@@ -21,12 +21,12 @@ namespace ChatManager.Controllers
             return View(users);
         }
 
-
+        [HttpGet]
         public ActionResult GetMessages(int id)
         {
             var chatMessages = DB.ChatMessages.ToList().Where(message => message.Sender == id || message.Receiver == id).ToList();
 
-            return View(chatMessages);
+            return Json(chatMessages);
         }
 
         [HttpPost]
