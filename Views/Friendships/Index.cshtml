@@ -4,6 +4,7 @@
     ViewBag.Title = "Index";
     var i = 0;
     bool listEmpty = true;
+    bool noFriends = true;
 }
 
 <div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
@@ -35,7 +36,6 @@
 <div id="friendshipsListContainer">
     @foreach (var item in Model)
     {
-
         if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
         {
             <div class="friendContainer">
@@ -50,6 +50,7 @@
                         listEmpty = false;
                         if (friendship.IdUser1 == item.Id || friendship.IdUser2 == item.Id)
                         {
+                            noFriends = false;
                             if (friendship.Status == "Requested" && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
                             {
                                 <div style="display: grid; grid-template-columns: auto;">
@@ -65,7 +66,7 @@
                                     <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
                                         <span class="fa green fa-check icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
                                     </a>
-                                    <a href="/Friendships/RemoveFriendshipRequest/@item.Id">
+                                    <a href="/Friendships/DeclineFriendshipRequest/@item.Id">
                                         <span class="fa red fa-times icon" title="Refuser la demande d'ami de @item.GetFullName(false)"></span>
                                     </a>
                                 </div>
@@ -74,82 +75,87 @@
                             {
                                 <div style="display:grid">
                                     <span class="fa green fa-check-circle icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
-                                    <a href="/Friendships/RemoveFriendshipRequest/@item.Id">
-                                        <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
-                                    </a>
+                                    @{
+                                        if (ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
+                                        {
+                                            <a href="/Friendships/RemoveFriendshipRequest/@item.Id">
+                                                <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="/Friendships/DeclineFriendshipRequest/@item.Id">
+                                                <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
+                                            </a>
+                                        }
+                                    }
+
                                 </div>
                             }
-                            else if (friendship == "")
+                            else if (friendship.Status == "Declined")
                             {
                                 <div style="display:grid">
                                     <span class="fa red fa-times-circle icon" title="Demande d'ami refusé par @item.GetFullName()"></span>
-
                                     <a href="/Friendships/SendFriendshipRequest/@item.Id">
                                         <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
-
                                     </a>
                                 </div>
 
                             }
                             else if (item.Blocked)
                             {
-                                <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                                    <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur></span>
-                                </a>
-
-                                }
-                                else
-                                {
-                                <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                                    <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
-                                </a>
-                            }
-                            if (listEmpty)
-                            {
-                                <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                                    <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
-                                </a>
+                                <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
                             }
                         }
-
-
-                    </div>
-                }
-            </div>
-
-
-
-
-            @section Scripts {
-                @Scripts.Render("~/bundles/jqueryval")
-                <script defer>
-                    let status = new PartialRefresh("/Friendships/GetFriendShipsStatus", "friendshipsListContainer", 5, UpdatefriendShipsCallback)
-                    $("#SearchButton").click(() => {
-                        var searchText = $("#Search").val().toLowerCase();
-
-                        $('#friendshipsListContainer .friendContainer').each(function () {
-                            var name = $(this).text().toLowerCase();
-                            if (name.includes(searchText)) {
-                                $(this).show();
-                            } else {
-                                $(this).hide();
-                            }
-                        });
-                    });
-
-
-                    $('#filter_NotFriend').click(function () {
-                        friendShipsStatus.command("/Friendships/SetFilterNotFriend?check=" + $(this).is(':checked'));
-                    })
-
-
-                    function UpdatefriendShipsCallback() {
-                        $(".command").click(function () {
-                            var url = $(this).attr("url");
-                            var message = $(this).attr("message");
-                            friendShipsStatus.confirmedCommand(message, url);
-                        });
-
                     }
-                </script>
-            }
+                    if (listEmpty || noFriends)
+                    {
+                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                            <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
+                        </a>
+                    }
+
+                    noFriends = true;
+                }
+
+            </div>
+        }
+    }
+</div>
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script defer>
+        let status = new PartialRefresh("/Friendships/GetFriendShipsStatus", "friendshipsListContainer", 5, UpdatefriendShipsCallback)
+        $("#SearchButton").click(() => {
+            var searchText = $("#Search").val().toLowerCase();
+
+            $('#friendshipsListContainer .friendContainer').each(function () {
+                var name = $(this).text().toLowerCase();
+                if (name.includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+
+        $('#filter_NotFriend').click(function () {
+            friendShipsStatus.command("/Friendships/SetFilterNotFriend?check=" + $(this).is(':checked'));
+        })
+
+
+        function UpdatefriendShipsCallback() {
+            $(".command").click(function () {
+                var url = $(this).attr("url");
+                var message = $(this).attr("message");
+                friendShipsStatus.confirmedCommand(message, url);
+            });
+
+        }
+    </script>
+}

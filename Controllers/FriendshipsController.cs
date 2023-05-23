@@ -56,5 +56,13 @@ namespace ChatManager.Controllers
 
             return RedirectToAction("Index");
         }
+
+        public ActionResult RemoveFriendshipRequest(int id)
+        {
+            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == OnlineUsers.GetSessionUser().Id && m.IdUser2 == id);
+            DB.Friendships.Delete(friendships.First().Id);
+
+            return RedirectToAction("Index");
+        }
     }
 }
