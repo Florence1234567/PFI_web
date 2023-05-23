@@ -12,7 +12,7 @@
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
     var avatarUrl = Url.Content(user.GetAvatarURL());
-    
+
     <div class="userItem">
         <div class="@avatarClass" style="background: url(@avatarUrl)"></div>
         @if (!noName)
@@ -375,7 +375,17 @@
             }
             else
             {
-                <span>@token</span>
+                //class="truncate-text"
+
+                if (token.Length > 30)
+                {
+                    <span class="truncate-text" title="@token">@token</span>
+
+                }
+                else
+                {
+                    <span >@token</span>
+                }
             }
         }
     }

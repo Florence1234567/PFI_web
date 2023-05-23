@@ -1,4 +1,5 @@
 ﻿using ChatManager.Models;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,10 +19,16 @@ namespace ChatManager.Controllers
             //var users = DB.Users.ToList().Where(user => user.Status == 3)
             //                           .OrderBy(user => user.Status)
             //                           .ToList();
-            var users = DB.Users.ToList();
-            ViewBag.Messages = null;
 
-            return View(users);
+            var chatMessages = DB.ChatMessages.ToList().Where(message =>
+            message.Sender == 0).ToList();
+
+            var users = DB.Users.ToList();
+
+            var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
+
+
+            return View(tuple);
         }
 
         [HttpGet]
@@ -33,10 +40,13 @@ namespace ChatManager.Controllers
             message.Sender == currentId && message.Receiver == id ||
             message.Sender == id && message.Receiver == currentId).ToList();
 
-            ViewBag.Messages = chatMessages;
+            var users = DB.Users.ToList();
 
-            return Json(chatMessages, JsonRequestBehavior.AllowGet);
+            var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
+
+            return PartialView("Index", tuple);
         }
+
 
         [HttpGet]
         public ActionResult GetMessages(int id)
@@ -47,8 +57,6 @@ namespace ChatManager.Controllers
             message.Sender == currentId && message.Receiver == id ||
             message.Sender == id && message.Receiver == currentId).ToList();
 
-            ViewBag.Messages = chatMessages;
-
             return Json(chatMessages, JsonRequestBehavior.AllowGet);
         }
 
@@ -56,6 +64,25 @@ namespace ChatManager.Controllers
         public ActionResult SendMessage(int id, string message)
         {
             DB.ChatMessages.Create(new ChatMessage(OnlineUsers.GetSessionUser().Id, id, message));
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult EditMessage(int id, string message)
+        {
+            ChatMessage chatMessage = DB.ChatMessages.Get(id);
+            chatMessage.Message = message;
+
+            //DB.ChatMessages.Update(chatMessage);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult DeleteMessage(int id)
+        {
+            DB.ChatMessages.Delete(id);
 
             return RedirectToAction("Index");
         }

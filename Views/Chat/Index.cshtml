@@ -1,8 +1,9 @@
-﻿@model IEnumerable<ChatManager.Models.User>
+﻿@model Tuple<List<ChatManager.Models.User>, List<ChatManager.Models.ChatMessage>>
 
 @{
     ViewBag.Title = "ChatRoom";
 }
+
 
 
 <div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
@@ -13,7 +14,7 @@
 <div class="main">
     <div style="display: grid; grid-template-columns: 60px auto; column-gap: 10px;">
         <div class="friendsListContainer" id="friendListContainer">
-            @foreach (var item in Model)
+            @foreach (var item in Model.Item1)
             {
                 if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
                 {
@@ -28,21 +29,66 @@
                 <div class="messagesHeader">
                     <h4 id="Selected">Sélectionnez un ami.</h4>
                 </div>
-                @if (ViewBag.Messages != null)
-                {
-                    <span>HELLLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOOOOO</span>
-                    foreach (var item in ViewBag.Messages)
-                    {
-                        @Helper.ParseContent(item.Message)
-                    }
-                }
 
+                <div id="messageBody">
+                    @{
+                        int nbMessages = 0;
+                        foreach (var message in Model.Item2)
+                        {
+                            nbMessages++;
+                            if (nbMessages == 1)
+                            {
+                                <div class="messageTime">
+                                    @message.Date
+                                </div>
+                            }
+
+
+                            if (message.Sender == 1 || message.Receiver == 1)
+                            {
+
+                                if (message.Sender == ChatManager.Models.OnlineUsers.GetSessionUser().Id)
+                                {
+
+                                    <div class="sentLayout">
+
+                                        <div class="sent" id="sent_@message.Id" title="@message.Date">
+                                            @Helper.ParseContent(message.Message)
+                                        </div>
+                                    </div>
+                                    <div class="editMessage" style="display:block" id="edit_@message.Id">
+                                        <input class="sent form-control" value="@message.Message" />
+                                        <span id="update_@message.Id" class="icon fa fa-check smallerIcon" title="Modifier ce message" data-placement="bottom">
+                                        </span>
+                                        <span id="delete_@message.Id" class="icon fa fa-times smallerIcon" title="Effacer ce message" data-placement="bottom">
+                                        </span>
+                                    </div>
+
+                                }
+                                else
+                                {
+                                    <div class="receivedLayout">
+                                        <div class="received" id="received_@message.Id" title="@message.Date">
+                                            @Helper.ParseContent(message.Message)
+
+                                        </div>
+                                    </div>
+
+                                }
+                            }
+                        }
+                    }
+
+                </div>
+
+                    
+
+                </div>
+                <div class="sendMessageLayout">
+                    <input id="message" class="form-control" style="width:100% !important; max-width:1000px !important;" placeholder="Tapez votre message ici ..." title="Les urls d'image sont prises en compte.">
+                    <span id="send" class="icon fa fa-paper-plane" title="Envoyer" data-placement="bottom"></span>
+                </div>
             </div>
-            <div class="sendMessageLayout">
-                <input id="message" class="form-control" style="width:100% !important; max-width:1000px !important;" placeholder="Tapez votre message ici ..." title="Les urls d'image sont prises en compte.">
-                <span id="send" class="icon fa fa-paper-plane" title="Envoyer" data-placement="bottom"></span>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -50,7 +96,7 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-<script defer>
+    <script defer>
         $("#message").hide();
         $("#send").hide();
 
@@ -58,7 +104,7 @@
 
         function SendMessage(userId) {
             //sending the message
-;            $.ajax({
+            $.ajax({
                 url: "/Chat/SendMessage",
                 type: "POST",
                 data: { id: userId, message: $("#message").val() },
@@ -73,21 +119,167 @@
             $("#message").val("");
         }
 
-        function ShowMessages(userId) {
+        function DeleteMessage(id) {
+            var confirmationMessage = "Are you sure you want to delete this message?";
+            var confirmed = confirm(confirmationMessage);
+            if (confirmed) {
+                $.ajax({
+                    url: "/Chat/DeleteMessage",
+                    type: "POST",
+                    data: { id: id },
+                    success: function (response) {
+                        var messageSent = $("#sent_" + id);
+                        messageSent.remove();
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log("Error editing message: " + errorThrown);
+                    }
+                });
+            }
+            
+        }
 
+        function EditMessage(id, editedMessage) {
+            console.log(editedMessage);
+            $.ajax({
+                url: "/Chat/EditMessage",
+                type: "POST",
+                data: { id: id, message: editedMessage },
+                success: function (response) {
+                    console.log(response);
+
+                    var messageSent = $("#sent_" + id);
+                    messageSent.show();
+                    $("#sent_" + id).text(editedMessage)
+                    ShowMessages($(".selectedTarget").data("user-id"), $('.selectedTarget'));
+                    if (editedMessage.length > 30) {
+                        $("#sent_" + id).addClass("truncate-text");
+                        $("#sent_" + id).attr("title", editedMessage)
+                    } else {
+                        $("#sent_" + id).removeClass("truncate-text");
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error editing message: " + errorThrown);
+                }
+            });
+        }
+
+        function ShowEditMessage(message) {
+
+            var id = message.attr("id").replace("sent_", "");
+            var edit = $("#edit_" + id);
+            message.hide();
+            edit.show();
+
+            var update = $("#update_" + id);
+            var remove = $("#delete_" + id);
+
+            update.click(function () {
+                var editedMessage = edit.find('.sent').val();
+                EditMessage(id, editedMessage);
+                edit.hide();
+            });
+
+            remove.click(function () {
+                DeleteMessage(id);
+                edit.hide();
+                var messageSent = $("#sent_" + id);
+                if (messageSent) {
+                    messageSent.show();
+                }
+            })
+        }
+
+        function ShowMessages(userId, div) {
             $.ajax({
                 url: "/Chat/GetMessagesViewBag",
                 type: "GET",
                 data: { id: userId },
-                success: function (response) {
-                    console.log(response);
-                    console.log(@ViewBag);
-                    console.log(@ViewBag.Messages);
+                success: function (updatedMessages) {
+                    $("#messageBody").html($(updatedMessages).find('#messageBody').html());
+                    $(".editMessage").hide();
+
+                    $(".sent").click(function () {
+                        if (!$(this).hasClass("form-control")) {
+                            $(".editMessage").hide();
+                            $(".sent").show();
+
+                            ShowEditMessage($(this));
+                        }
+                    })
+
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     console.log("Error sending message: " + errorThrown);
                 }
             });
+            UpdateMessageHeader(div);
+            /*$.ajax({
+               url: "/Chat/GetMessages",
+               type: "GET",
+               data: { id: userId },
+               success: function (data) {
+
+                   $(".messagesPanel").find(".sentLayout").remove();
+                   $(".messagesPanel").find(".receivedLayout").remove();
+                   $(".messagesPanel").find(".messageTime").remove();
+
+                   for (var i = 0; i < data.length; i++) {
+
+                       var messageObject = data[i];
+                       var message = messageObject.Message.toString();
+                       var date = messageObject.Date;
+
+                       // Afficher le temps
+                       if (i == 0) {
+                           var messageTime = $("<div>").addClass("messageTime");
+                           messageTime.text(date);
+                           $(".messagesPanel").append(messageTime);
+                       }
+
+                       var messageLayout = $("<div>");
+
+                       var messageContainer = $("<div>");
+                       messageContainer.attr("title", date);
+
+                       //var messageSpan = $("<span>").addClass("token");
+                       //messageSpan.text(message);
+
+                       if (messageObject.Sender == userId) {
+                           messageLayout.addClass("receivedLayout");
+                           messageContainer.addClass("received");
+                           messageContainer.attr("id", "received_" + messageObject.Id);
+                       }
+                       else {
+                           messageLayout.addClass("sentLayout");
+                           messageContainer.addClass("sent");
+                           messageContainer.attr("id", "sent_" + messageObject.Id);
+                       }
+
+
+                       var helper = (`@@Helper.ParseContent("${message}")`);
+                       console.log(helper);
+
+                       //messageContainer.append(helper);
+                       //var message = messageObject.Message.toString();
+                       //var parsedContent = '@@Helper.ParseContent("https://www.youtube.com/watch?v=OCceWupZ_Ik&ab_channel=MasterCoding")';
+                       //messageContainer.append(parsedContent);
+                       //messageContainer.html = parsedContent;
+
+                       messageContainer.append(parsedContent);
+
+                       $(".messagesPanel").append(messageLayout);
+                       messageLayout.append(messageContainer);
+                   }
+               },
+               error: function (xhr, textStatus, errorThrown) {
+                   console.log("ERREUR" + errorThrown);
+                   console.log("XHR:", xhr);
+                   console.log("Erreur:", errorThrown);
+               }
+
+           });*/
         }
 
         function HideFriendBorder() {
@@ -116,32 +308,37 @@
             $("#send").show();
         }
 
-
-        $(".unselectedTarget").click(function () {
+        function UpdateMessageHeader(div) {
             HideFriendBorder();
 
-            $(this).addClass("selectedTarget");
-            $(this).removeClass("unselectedTarget");
+            div.addClass("selectedTarget");
+            div.removeClass("unselectedTarget");
 
             //update header
-            var avatarClone = $(this).find(".UserSmallAvatar").clone();
+            var avatarClone = div.find(".UserSmallAvatar").clone();
             avatarClone.removeClass("UserSmallAvatar");
             avatarClone.addClass("UserMediumAvatar");
 
-            var friendName = $(this).attr("title");
+            var friendName = div.attr("title");
 
             ShowSelectedFriend(friendName, avatarClone);
 
-            //update message panel
-            ShowMessages($(".selectedTarget").data("user-id"));
+        }
+
+
+        $(".unselectedTarget").click(function () {
+            UpdateMessageHeader($(this));
+            var userId = $(".selectedTarget").data("user-id");
+            ShowMessages(userId,$(this));
         })
 
         $("#send").click(function () {
             var userId = $(".selectedTarget").data("user-id");
 
             SendMessage(userId);
-            ShowMessages(userId);
+            ShowMessages(userId, $('.selectedTarget'));
         })
+        
 
         $(document).keydown(function (event) {
             if (event.keyCode === 27) {
@@ -149,5 +346,7 @@
             }
         });
 
-</script>
+        
+
+    </script>
 }
