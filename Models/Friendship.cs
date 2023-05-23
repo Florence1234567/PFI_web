@@ -13,7 +13,7 @@ namespace ChatManager.Models
         {
             IdUser1 = idUser1;
             IdUser2 = idUser2;
-            Status = "Request";
+            Status = "Requested";
         }
 
         public Friendship Clone()

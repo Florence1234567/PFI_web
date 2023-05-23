@@ -36,5 +36,25 @@ namespace ChatManager.Controllers
 
             return RedirectToAction("Index");
         }
+
+        public ActionResult AcceptFriendshipRequest(int id)
+        {
+            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
+            var friendship = DB.Friendships.Get(friendships.First().Id);
+            friendship.Status = "Friend";
+            DB.Friendships.Update(friendship);
+
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult DeclineFriendshipRequest(int id)
+        {
+            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
+            var friendship = DB.Friendships.Get(friendships.First().Id);
+            friendship.Status = "Declined";
+            DB.Friendships.Update(friendship);
+
+            return RedirectToAction("Index");
+        }
     }
 }
