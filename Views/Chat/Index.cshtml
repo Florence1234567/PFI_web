@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ChatManager.Models.User>
+﻿@model Tuple<List<ChatManager.Models.User>, List<ChatManager.Models.ChatMessage>>
 
 @{
     ViewBag.Title = "ChatRoom";
@@ -14,14 +14,12 @@
 <div class="main">
     <div style="display: grid; grid-template-columns: 60px auto; column-gap: 10px;">
         <div class="friendsListContainer" id="friendListContainer">
-            @foreach (var item in Model)
+            @foreach (var item in Model.Item1)
             {
                 if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
                 {
                     <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id">
-                        <a href="/Chat/SetMessagedUserId/@item.Id">
-                            @Helper.AvatarUser(item, "UserSmallAvatar", true)
-                        </a>
+                        @Helper.AvatarUser(item, "UserSmallAvatar", true)
                     </div>
                 }
             }
@@ -32,15 +30,11 @@
                     <h4 id="Selected">Sélectionnez un ami.</h4>
                 </div>
 
-                <span>
-                   
-                    @Helper.ParseContent(Session["MessagedUserId"].ToString())
-                </span>
 
-                @foreach (var message in ViewBag.Messages)
+                @foreach (var message in Model.Item2)
                 {
 
-                    if (message.Sender == (int)Session["MessagedUserId"] || message.Receiver == (int)Session["MessagedUserId"])
+                    if (message.Sender == 1 || message.Receiver == 1)
                     {
 
                         if (message.Sender == ChatManager.Models.OnlineUsers.GetSessionUser().Id)
@@ -80,7 +74,7 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-<script defer>
+    <script defer>
         $("#message").hide();
         $("#send").hide();
 
@@ -88,7 +82,7 @@
 
         function SendMessage(userId) {
             //sending the message
-;            $.ajax({
+            ; $.ajax({
                 url: "/Chat/SendMessage",
                 type: "POST",
                 data: { id: userId, message: $("#message").val() },
@@ -104,72 +98,83 @@
         }
 
         function ShowMessages(userId) {
-           
-             /*$.ajax({
-                url: "/Chat/GetMessages",
+            $.ajax({
+                url: "/Chat/GetMessagesViewBag",
                 type: "GET",
                 data: { id: userId },
-                success: function (data) {
-
-                    $(".messagesPanel").find(".sentLayout").remove();
-                    $(".messagesPanel").find(".receivedLayout").remove();
-                    $(".messagesPanel").find(".messageTime").remove();
-
-                    for (var i = 0; i < data.length; i++) {
-
-                        var messageObject = data[i];
-                        var message = messageObject.Message.toString();
-                        var date = messageObject.Date;
-
-                        // Afficher le temps
-                        if (i == 0) {
-                            var messageTime = $("<div>").addClass("messageTime");
-                            messageTime.text(date);
-                            $(".messagesPanel").append(messageTime);
-                        }
-
-                        var messageLayout = $("<div>");
-
-                        var messageContainer = $("<div>");
-                        messageContainer.attr("title", date);
-
-                        //var messageSpan = $("<span>").addClass("token");
-                        //messageSpan.text(message);
-
-                        if (messageObject.Sender == userId) {
-                            messageLayout.addClass("receivedLayout");
-                            messageContainer.addClass("received");
-                            messageContainer.attr("id", "received_" + messageObject.Id);
-                        }
-                        else {
-                            messageLayout.addClass("sentLayout");
-                            messageContainer.addClass("sent");
-                            messageContainer.attr("id", "sent_" + messageObject.Id);
-                        }
-
-
-                        var helper = (`@@Helper.ParseContent("${message}")`);
-                        console.log(helper);
-
-                        //messageContainer.append(helper);
-                        //var message = messageObject.Message.toString();
-                        //var parsedContent = '@@Helper.ParseContent("https://www.youtube.com/watch?v=OCceWupZ_Ik&ab_channel=MasterCoding")';
-                        //messageContainer.append(parsedContent);
-                        //messageContainer.html = parsedContent;
-
-                        messageContainer.append(parsedContent);
-
-                        $(".messagesPanel").append(messageLayout);
-                        messageLayout.append(messageContainer);
-                    }
+                success: function (response) {
+                    console.log("SUCCESS");
+                    $(".messagesPanel").html(response);
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log("ERREUR" + errorThrown);
-                    console.log("XHR:", xhr);
-                    console.log("Erreur:", errorThrown);
+                    console.log("Error sending message: " + errorThrown);
                 }
+            });
+            /*$.ajax({
+               url: "/Chat/GetMessages",
+               type: "GET",
+               data: { id: userId },
+               success: function (data) {
 
-            });*/
+                   $(".messagesPanel").find(".sentLayout").remove();
+                   $(".messagesPanel").find(".receivedLayout").remove();
+                   $(".messagesPanel").find(".messageTime").remove();
+
+                   for (var i = 0; i < data.length; i++) {
+
+                       var messageObject = data[i];
+                       var message = messageObject.Message.toString();
+                       var date = messageObject.Date;
+
+                       // Afficher le temps
+                       if (i == 0) {
+                           var messageTime = $("<div>").addClass("messageTime");
+                           messageTime.text(date);
+                           $(".messagesPanel").append(messageTime);
+                       }
+
+                       var messageLayout = $("<div>");
+
+                       var messageContainer = $("<div>");
+                       messageContainer.attr("title", date);
+
+                       //var messageSpan = $("<span>").addClass("token");
+                       //messageSpan.text(message);
+
+                       if (messageObject.Sender == userId) {
+                           messageLayout.addClass("receivedLayout");
+                           messageContainer.addClass("received");
+                           messageContainer.attr("id", "received_" + messageObject.Id);
+                       }
+                       else {
+                           messageLayout.addClass("sentLayout");
+                           messageContainer.addClass("sent");
+                           messageContainer.attr("id", "sent_" + messageObject.Id);
+                       }
+
+
+                       var helper = (`@@Helper.ParseContent("${message}")`);
+                       console.log(helper);
+
+                       //messageContainer.append(helper);
+                       //var message = messageObject.Message.toString();
+                       //var parsedContent = '@@Helper.ParseContent("https://www.youtube.com/watch?v=OCceWupZ_Ik&ab_channel=MasterCoding")';
+                       //messageContainer.append(parsedContent);
+                       //messageContainer.html = parsedContent;
+
+                       messageContainer.append(parsedContent);
+
+                       $(".messagesPanel").append(messageLayout);
+                       messageLayout.append(messageContainer);
+                   }
+               },
+               error: function (xhr, textStatus, errorThrown) {
+                   console.log("ERREUR" + errorThrown);
+                   console.log("XHR:", xhr);
+                   console.log("Erreur:", errorThrown);
+               }
+
+           });*/
         }
 
         function HideFriendBorder() {
@@ -218,8 +223,6 @@
             ShowMessages($(".selectedTarget").data("user-id"));
 
             var userId = $(".selectedTarget").data("user-id");
-
-            //window.location = "@Url.Action("SetMessagedUserId")" + "/" + userId;
         })
 
         $("#send").click(function () {
@@ -235,5 +238,5 @@
             }
         });
 
-</script>
+    </script>
 }

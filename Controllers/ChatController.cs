@@ -21,14 +21,15 @@ namespace ChatManager.Controllers
             var chatMessages = DB.ChatMessages.ToList().Where(message =>
             message.Sender == OnlineUsers.GetSessionUser().Id || message.Receiver == OnlineUsers.GetSessionUser().Id).ToList();
 
-            ViewBag.Messages = chatMessages;
+            var users = DB.Users.ToList();
 
-            Session["MessagedUserId"] = 0;
+            var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
 
-            return View(DB.Users.ToList());
+
+            return View(tuple);
         }
 
-        [HttpPost]
+        [HttpGet]
         public ActionResult GetMessagesViewBag(int id)
         {
             var currentId = OnlineUsers.GetSessionUser().Id;
@@ -37,16 +38,10 @@ namespace ChatManager.Controllers
             message.Sender == currentId && message.Receiver == id ||
             message.Sender == id && message.Receiver == currentId).ToList();
 
-            ViewBag.Messages = chatMessages;
 
-            return RedirectToAction("Index");
+            return PartialView("Index", chatMessages);
         }
 
-        public ActionResult SetMessagedUserId(int id)
-        {
-            Session["MessagedUserId"] = id;
-            return RedirectToAction("Index");
-        }
 
         [HttpGet]
         public ActionResult GetMessages(int id)
