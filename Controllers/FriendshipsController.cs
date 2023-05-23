@@ -19,8 +19,9 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
-            /*if (Session["FriendshipFilter"] == null)
-                Session["FriendshipFilter"] = "NotFriend";*/
+            int id = OnlineUsers.GetSessionUser().Id;
+            var friendship = DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id);
+            ViewBag.Friendship = friendship;
             return View(DB.Users.ToList());
         }
         public ActionResult SetFriendshipFilter(int id)
@@ -31,7 +32,7 @@ namespace ChatManager.Controllers
 
         public ActionResult SendFriendshipRequest(int id)
         {
-            DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id));
+            DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id, OnlineUsers.GetSessionUser().Id));
 
             return RedirectToAction("Index");
         }
