@@ -18,13 +18,17 @@ namespace ChatManager.Controllers
             //var users = DB.Users.ToList().Where(user => user.Status == 3)
             //                           .OrderBy(user => user.Status)
             //                           .ToList();
-            var users = DB.Users.ToList();
-            ViewBag.Messages = null;
+            var chatMessages = DB.ChatMessages.ToList().Where(message =>
+            message.Sender == OnlineUsers.GetSessionUser().Id || message.Receiver == OnlineUsers.GetSessionUser().Id).ToList();
 
-            return View(users);
+            ViewBag.Messages = chatMessages;
+
+            Session["MessagedUserId"] = 0;
+
+            return View(DB.Users.ToList());
         }
 
-        [HttpGet]
+        [HttpPost]
         public ActionResult GetMessagesViewBag(int id)
         {
             var currentId = OnlineUsers.GetSessionUser().Id;
@@ -35,7 +39,13 @@ namespace ChatManager.Controllers
 
             ViewBag.Messages = chatMessages;
 
-            return Json(chatMessages, JsonRequestBehavior.AllowGet);
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult SetMessagedUserId(int id)
+        {
+            Session["MessagedUserId"] = id;
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -46,8 +56,6 @@ namespace ChatManager.Controllers
             var chatMessages = DB.ChatMessages.ToList().Where(message => 
             message.Sender == currentId && message.Receiver == id ||
             message.Sender == id && message.Receiver == currentId).ToList();
-
-            ViewBag.Messages = chatMessages;
 
             return Json(chatMessages, JsonRequestBehavior.AllowGet);
         }
