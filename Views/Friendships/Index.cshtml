@@ -2,7 +2,6 @@
 
 @{
     ViewBag.Title = "Index";
-    var i = 0;
     bool listEmpty = true;
     bool noFriends = true;
 }
@@ -78,13 +77,13 @@
                                     @{
                                         if (ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
                                         {
-                                            <a href="/Friendships/RemoveFriendshipRequest/@item.Id">
+                                            <a href="/Friendships/RemoveFriendshipRequest/@item.Id&1">
                                                 <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
                                             </a>
                                         }
                                         else
                                         {
-                                            <a href="/Friendships/DeclineFriendshipRequest/@item.Id">
+                                            <a href="/Friendships/RemoveFriendshipRequest/@item.Id&1">
                                                 <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
                                             </a>
                                         }
@@ -130,6 +129,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script defer>
         let status = new PartialRefresh("/Friendships/GetFriendShipsStatus", "friendshipsListContainer", 5, UpdatefriendShipsCallback)
+
         $("#SearchButton").click(() => {
             var searchText = $("#Search").val().toLowerCase();
 
@@ -144,8 +144,8 @@
         });
 
 
-        $('#filter_NotFriend').click(function () {
-            friendShipsStatus.command("/Friendships/SetFilterNotFriend?check=" + $(this).is(':checked'));
+        $('#FilterNotFriend').click(function () {
+            status.command("/Friendships/SetFilterNotFriend?check=" + $(this).is(':checked'));
         })
 
 
@@ -153,7 +153,7 @@
             $(".command").click(function () {
                 var url = $(this).attr("url");
                 var message = $(this).attr("message");
-                friendShipsStatus.confirmedCommand(message, url);
+                status.confirmedCommand(message, url);
             });
 
         }
