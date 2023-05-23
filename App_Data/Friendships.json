@@ -1,1 +1,1 @@
-[{"Id":1,"IdUser1":9,"IdUser2":10,"Status":"Request","PendingUser1":true,"PendingUser2":false}]
+[{"Id":1,"IdUser1":9,"IdUser2":10,"Status":"Request","PendingUser1":true,"PendingUser2":false},{"Id":2,"IdUser1":1,"IdUser2":10,"Status":"Request","PendingUser1":true,"PendingUser2":false}]
