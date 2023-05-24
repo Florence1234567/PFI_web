@@ -286,6 +286,8 @@
     <Content Include="Views\Friendships\SetSearchText.cshtml" />
     <Content Include="Views\Chat\ChatModeration.cshtml" />
     <Content Include="Views\Chat\AdminMessageDelete.cshtml" />
+    <Content Include="Views\Friendships\SetFilterNotFriend.cshtml" />
+    <Content Include="Views\Friendships\SetFilterBlocked.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

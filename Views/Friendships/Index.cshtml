@@ -10,9 +10,7 @@
 <hr />
 <div style="display: grid; grid-template-columns: 295px 35px; align-items: center;">
     <input type="search" id="Search" placeholder="Recherche" class="form-control" runat="server"/>
-    <a href="/Friendships/SetSearchText/">
         <span id="SearchButton" class="icon fa fa-search" style="padding-left: 10px;"></span>
-    </a>
 </div>
 <div class="friendfilters">
     <input type="checkbox" id="FilterNotFriend" class="filter" checked />
@@ -38,21 +36,37 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script defer>
         $("#SearchButton").click(() => {
-            var searchText = $("#Search").val().toLowerCase();
+            var searchText = $("#Search").val();
             $.ajax({
                 url: '/Friendships/SetSearchText',
                 data: { text: searchText },
                 type: 'post',
-                success: function (data) {
-                    console.log('Succes');
-                }
+            });
+        });
+
+        $("#FilterNotFriend").click(() => {
+            $.ajax({
+                url: "/Friendships/SetFilterNotFriend?isChecked",
+                data: { isChecked: $(this).is(':checked') },
+                type: 'post',
+            });
+        });
+
+        $("#FilterBlocked").click(() => {
+            var filterBlocked = $("#FilterBlocked");
+            $.ajax({
+                url: "/Friendships/SetFilterBlocked?isChecked" + filterBlocked,
+                type: 'post',
+                success: (function () {
+                    console.log(filterBlocked);
+                })
             });
         });
 
         $(function () {
             setInterval(function () {
-                $('#friendshipListContainer').load('/Friendships/FriendshipsList');
-            }, 2000);
+                $('#friendshipListContainer').load('/Friendships/FriendshipsList/');
+            }, 5000);
         });
     </script>
 }

@@ -27,7 +27,7 @@ namespace ChatManager.Controllers
             else
                 users = DB.Users.ToList();
 
-            return View(users);
+                return View(users);
         }
         [OnlineUsers.UserAccess]
         public ActionResult FriendshipsList()
@@ -53,9 +53,15 @@ namespace ChatManager.Controllers
             Session["SearchText"] = text;
             return RedirectToAction("Index");
         }
-        public ActionResult SetFriendshipFilter(int id)
+        public ActionResult SetFilterNotFriend(bool isChecked)
         {
-            Session["FriendshipFilter"] = id;
+            Session["FilterNotFriend"] = isChecked;
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult SetFilterBlocked(bool isChecked)
+        {
+            Session["FilterBlocked"] = isChecked;
             return RedirectToAction("Index");
         }
 
