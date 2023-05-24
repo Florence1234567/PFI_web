@@ -1,1 +1,1 @@
-[{"Id":1,"IdUser1":9,"IdUser2":1,"Status":"Declined"}]
+[{"Id":1,"IdUser1":9,"IdUser2":1,"Status":"Declined"},{"Id":2,"IdUser1":10,"IdUser2":9,"Status":"Requested"},{"Id":3,"IdUser1":10,"IdUser2":2,"Status":"Requested"}]

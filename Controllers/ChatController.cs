@@ -20,8 +20,8 @@ namespace ChatManager.Controllers
 
             var currentId = OnlineUsers.GetSessionUser().Id;
 
-            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == currentId
-            || m.IdUser2 == currentId);
+            var friendships = DB.Friendships.ToList().Where(m => (m.IdUser1 == currentId
+            || m.IdUser2 == currentId) && m.Status == "Requested");
 
             foreach (var friendship in friendships)
             {
@@ -35,10 +35,18 @@ namespace ChatManager.Controllers
                 }
             }
 
-            var chatMessages = DB.ChatMessages.ToList().Where(message =>
-            message.Sender == 0).ToList();
+            //var chatMessages = DB.ChatMessages.ToList().Where(message =>
+            //message.Sender != currentId && message.Receiver == currentId).ToList();
+            //foreach (var chatMessage in chatMessages)
+            //{
+            //    OnlineUsers.AddNotification(currentId, chatMessage.Message);
+            //}
+            var chatMessages = DB.ChatMessages.ToList().Where(message => message.Sender == 0).ToList();
 
-            var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
+
+            var notifications = OnlineUsers.PopNotifications(currentId);
+
+            var tuple = new Tuple<List<User>, List<ChatMessage>, List<string>>(users, chatMessages, notifications);
 
 
             return View(tuple);
@@ -54,8 +62,9 @@ namespace ChatManager.Controllers
             message.Sender == id && message.Receiver == currentId).ToList();
 
             var users = DB.Users.ToList();
+            var notifications = new List<string>();
 
-            var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
+            var tuple = new Tuple<List<User>, List<ChatMessage>, List<string>>(users, chatMessages, notifications);
 
             return PartialView("Index", tuple);
         }
@@ -77,6 +86,7 @@ namespace ChatManager.Controllers
         public ActionResult SendMessage(int id, string message)
         {
             DB.ChatMessages.Create(new ChatMessage(OnlineUsers.GetSessionUser().Id, id, message));
+            OnlineUsers.AddNotification(OnlineUsers.GetSessionUser().Id, message);
 
             return RedirectToAction("Index");
         }
