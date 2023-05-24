@@ -1,0 +1,97 @@
+﻿@model IEnumerable<ChatManager.Models.User>
+
+@{
+    ViewBag.Title = "Index";
+    bool listEmpty = true;
+    bool noFriends = true;
+}
+@foreach (var item in Model)
+{
+    if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
+    {
+        <div class="friendContainer">
+            <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
+                @Helper.AvatarUser(item, "UserSmallAvatar")
+            </a>
+            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+
+            @{
+                if (item.Blocked)
+                {
+                    <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
+                }
+                else
+                {
+                    foreach (var friendship in ViewBag.friendship)
+                    {
+                        listEmpty = false;
+                        if (friendship.IdUser1 == item.Id || friendship.IdUser2 == item.Id)
+                        {
+                            noFriends = false;
+                            if (friendship.Status == "Requested" && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
+                            {
+                                <div style="display: grid; grid-template-columns: 30px 30px;">
+                                    <span class="fa green fa-clock-o icon" title="En attente de  @item.GetFullName(false)"></span>
+                                    <a href="/Friendships/RemoveFriendshipRequest1/@item.Id">
+                                        <span class="fa red fa-times icon" title="Retirer la demande d'ami à @item.GetFullName(false)"></span>
+                                    </a>
+                                </div>
+                            }
+                            else if (friendship.Status == "Requested" && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser2)
+                            {
+                                <div style="display: grid; grid-template-columns: 30px 30px;">
+                                    <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
+                                        <span class="fa green fa-check icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
+                                    </a>
+                                    <a href="/Friendships/DeclineFriendshipRequest/@item.Id">
+                                        <span class="fa red fa-times icon" title="Refuser la demande d'ami de @item.GetFullName(false)"></span>
+                                    </a>
+                                </div>
+                            }
+                            else if (friendship.Status == "Friend")
+                            {
+                                <div style="display: grid; grid-template-columns: 30px 30px;">
+                                    <span class="fa green fa-check-circle icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
+                                    @{
+                                        if (ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
+                                        {
+                                            <a href="/Friendships/RemoveFriendshipRequest1/@item.Id">
+                                                <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="/Friendships/RemoveFriendshipRequest2/@item.Id">
+                                                <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
+                                            </a>
+                                        }
+                                    }
+
+                                </div>
+                            }
+                            else if (friendship.Status == "Declined")
+                            {
+                                <div style="display: grid; grid-template-columns: 30px 30px;">
+                                    <span class="fa red fa-times-circle icon" title="Demande d'ami refusé par @item.GetFullName()"></span>
+                                    <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                                        <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
+                                    </a>
+                                </div>
+
+                            }
+                        }
+                    }
+                    if (listEmpty || noFriends)
+                    {
+                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                            <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
+                        </a>
+                    }
+
+                    noFriends = true;
+                }
+            }
+
+        </div>
+    }
+}

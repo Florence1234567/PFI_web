@@ -1,11 +1,7 @@
 ﻿@model IEnumerable<ChatManager.Models.User>
-
 @{
     ViewBag.Title = "Index";
-    bool listEmpty = true;
-    bool noFriends = true;
 }
-
 <div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
     <img src="~/friendships.png" style="width: 56px;" />
     <h3>Gestion des amitiés</h3>
@@ -13,8 +9,10 @@
 
 <hr />
 <div style="display: grid; grid-template-columns: 295px 35px; align-items: center;">
-    <input type="search" id="Search" placeholder="Recherche" class="form-control" />
-    <span id="SearchButton" class="icon fa fa-search" style="padding-left: 10px;"></span>
+    <input type="search" id="Search" placeholder="Recherche" class="form-control" runat="server"/>
+    <a href="/Friendships/SetSearchText/">
+        <span id="SearchButton" class="icon fa fa-search" style="padding-left: 10px;"></span>
+    </a>
 </div>
 <div class="friendfilters">
     <input type="checkbox" id="FilterNotFriend" class="filter" checked />
@@ -33,135 +31,28 @@
 <hr />
 
 <div id="friendshipListContainer">
-    @foreach (var item in Model)
-    {
-        if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
-        {
-            <div class="friendContainer">
-                <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
-                    @Helper.AvatarUser(item, "UserSmallAvatar")
-                </a>
-                @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
-
-                @{
-                    if (item.Blocked)
-                    {
-                        <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
-                    }
-                    else
-                    {
-                        foreach (var friendship in ViewBag.friendship)
-                        {
-                            listEmpty = false;
-                            if (friendship.IdUser1 == item.Id || friendship.IdUser2 == item.Id)
-                            {
-                                noFriends = false;
-                                if (friendship.Status == "Requested" && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
-                                {
-                                    <div style="display: grid; grid-template-columns: 30px 30px;">
-                                        <span class="fa green fa-clock-o icon" title="En attente de  @item.GetFullName(false)"></span>
-                                        <a href="/Friendships/RemoveFriendshipRequest1/@item.Id">
-                                            <span class="fa red fa-times icon" title="Retirer la demande d'ami à @item.GetFullName(false)"></span>
-                                        </a>
-                                    </div>
-                                }
-                                else if (friendship.Status == "Requested" && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser2)
-                                {
-                                    <div style="display: grid; grid-template-columns: 30px 30px;">
-                                        <a href="/Friendships/AcceptF\riendshipRequest/@item.Id">
-                                            <span class="fa green fa-check icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
-                                        </a>
-                                        <a href="/Friendships/DeclineFriendshipRequest/@item.Id">
-                                            <span class="fa red fa-times icon" title="Refuser la demande d'ami de @item.GetFullName(false)"></span>
-                                        </a>
-                                    </div>
-                                }
-                                else if (friendship.Status == "Friend")
-                                {
-                                    <div style="display: grid; grid-template-columns: 30px 30px;">
-                                        <span class="fa green fa-check-circle icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
-                                        @{
-                                            if (ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
-                                            {
-                                                <a href="/Friendships/RemoveFriendshipRequest1/@item.Id">
-                                                    <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
-                                                </a>
-                                            }
-                                            else
-                                            {
-                                                <a href="/Friendships/RemoveFriendshipRequest2/@item.Id">
-                                                    <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
-                                                </a>
-                                            }
-                                        }
-
-                                    </div>
-                                }
-                                else if (friendship.Status == "Declined")
-                                {
-                                    <div style="display: grid; grid-template-columns: 30px 30px;">
-                                        <span class="fa red fa-times-circle icon" title="Demande d'ami refusé par @item.GetFullName()"></span>
-                                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                                            <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
-                                        </a>
-                                    </div>
-
-                                }
-                            }
-                        }
-                        if (listEmpty || noFriends)
-                        {
-                            <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                                <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
-                            </a>
-                        }
-
-                        noFriends = true;
-                    }
-                }
-
-            </div>
-        }
-    }
+    @{Html.RenderPartial("FriendshipsList");}
 </div>
-
-
-
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script defer>
         $("#SearchButton").click(() => {
             var searchText = $("#Search").val().toLowerCase();
-
-            $('#friendshipsListContainer .friendContainer').each(function () {
-                var name = $(this).text().toLowerCase();
-                if (name.includes(searchText)) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
+            $.ajax({
+                url: '/Friendships/SetSearchText',
+                data: { text: searchText },
+                type: 'post',
+                success: function (data) {
+                    console.log('Succes');
                 }
             });
         });
 
-
-        $('#FilterNotFriend').click(function () {
-            status.command("/Friendships/SetFilterNotFriend?check=" + $(this).is(':checked'));
-        })
-
-        window.setInterval(function () {
-            $.ajax({
-                url: '/Chat',
-                type: "POST",
-                success: function (partialViewHtml) {
-                    $("#friendshipListContainer").html(partialViewHtml);
-                });
-        },
-            error: function () {
-                alert('Erreur');
-            }
-                });
-            }, 5000);
-
+        $(function () {
+            setInterval(function () {
+                $('#friendshipListContainer').load('/Friendships/FriendshipsList');
+            }, 2000);
+        });
     </script>
 }

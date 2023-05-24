@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI;
 
 namespace ChatManager.Controllers
 {
@@ -16,7 +17,41 @@ namespace ChatManager.Controllers
             int id = OnlineUsers.GetSessionUser().Id;
             var friendship = DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id);
             ViewBag.Friendship = friendship;
-            return View(DB.Users.ToList());
+
+            IEnumerable<User> users;
+            if (Session["SearchText"] != null)
+                if ((string)Session["SearchText"] == "")
+                    users = DB.Users.ToList();
+                else
+                    users = DB.Users.ToList().Where(m => m.FirstName.Contains((string)Session["SearchText"]) || m.LastName.Contains((string)Session["SearchText"]));
+            else
+                users = DB.Users.ToList();
+
+            return View(users);
+        }
+        [OnlineUsers.UserAccess]
+        public ActionResult FriendshipsList()
+        {
+            int id = OnlineUsers.GetSessionUser().Id;
+            var friendship = DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id);
+            ViewBag.Friendship = friendship;
+
+            IEnumerable<User> users;
+
+            if(Session["SearchText"] != null)
+                if ((string)Session["SearchText"] == "")
+                    users = DB.Users.ToList();
+                else
+                    users = DB.Users.ToList().Where(m => m.FirstName.Contains((string)Session["SearchText"]) || m.LastName.Contains((string)Session["SearchText"]));
+            else
+                users = DB.Users.ToList();
+
+            return PartialView(users);
+        }
+        public ActionResult SetSearchText(string text)
+        {
+            Session["SearchText"] = text;
+            return RedirectToAction("Index");
         }
         public ActionResult SetFriendshipFilter(int id)
         {
@@ -26,7 +61,7 @@ namespace ChatManager.Controllers
 
         public ActionResult SendFriendshipRequest(int id)
         {
-            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == id || 
+            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == id ||
             m.IdUser1 == OnlineUsers.GetSessionUser().Id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
 
             if (friendships.Count() != 0)
