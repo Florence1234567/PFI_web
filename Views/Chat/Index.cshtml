@@ -1,74 +1,65 @@
-﻿@model Tuple<List<ChatManager.Models.User>, List<ChatManager.Models.ChatMessage>, List<string>>
+﻿@model Tuple<List<ChatManager.Models.User>, List<ChatManager.Models.ChatMessage>>
 
 @{
     ViewBag.Title = "ChatRoom";
 }
 
 
+@if (!ChatManager.Models.OnlineUsers.GetSessionUser().IsAdmin)
+{
+    <div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
+        <img src="~/favicon.png" style="width: 56px;" />
+        <h3>Salle de discussions</h3>
+    </div>
 
-<div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
-    <img src="~/favicon.png" style="width: 56px;" />
-    <h3>Salle de discussions</h3>
-</div>
-
-<div class="main">
-    <div style="display: grid; grid-template-columns: 60px auto; column-gap: 10px;">
-        <div class="friendsListContainer" id="friendListContainer">
-            @{
-                foreach (var item in Model.Item1)
-                {
-                    bool showNotif = false;
-                    
-                    foreach (var message in Model.Item2)
+    <div class="main">
+        <div style="display: grid; grid-template-columns: 60px auto; column-gap: 10px;">
+            <div class="friendsListContainer" id="friendListContainer">
+                @{
+                    foreach (var item in Model.Item1)
                     {
-                        foreach (string notif in Model.Item3)
+                        bool showNotif = false;
+
+                        
+
+                        if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
                         {
-                            if (notif == message.Message)
+                            <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id">
+                                @Helper.AvatarUser(item, "UserSmallAvatar", true)
+
+                                @{
+                                    if (showNotif)
+                                    {
+                                        <div id="unread" class="icon fa fa-d smallerIcon">
+
+                                        </div>
+                                    }
+                                }
+
+                            </div>
+                                        }
+                                    }
+                }
+
+            </div>
+            <div>
+                <div class="messagesPanel" id="messagePanel">
+                    <div class="messagesHeader">
+                        <h4 id="Selected">Sélectionnez un ami.</h4>
+                    </div>
+
+                    <div id="messageBody">
+                        @{
+                            int nbMessages = 0;
+                            foreach (var message in Model.Item2)
                             {
-                                showNotif = true;
-                            }
-                        }
-
-                    }
-
-                    if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
-                    {
-                        <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id">
-                            @Helper.AvatarUser(item, "UserSmallAvatar", true)
-
-                            @{
-                                if (showNotif)
+                                nbMessages++;
+                                if (nbMessages == 1)
                                 {
-                                    <div id="unread" class="icon fa fa-d smallerIcon">
-
+                                    <div class="messageTime">
+                                        @message.Date
                                     </div>
                                 }
-                            }
-
-                        </div>
-                    }
-                }
-            }
-
-        </div>
-        <div>
-            <div class="messagesPanel" id="messagePanel">
-                <div class="messagesHeader">
-                    <h4 id="Selected">Sélectionnez un ami.</h4>
-                </div>
-
-                <div id="messageBody">
-                    @{
-                        int nbMessages = 0;
-                        foreach (var message in Model.Item2)
-                        {
-                            nbMessages++;
-                            if (nbMessages == 1)
-                            {
-                                <div class="messageTime">
-                                    @message.Date
-                                </div>
-                            }
 
                                 if (message.Sender == ChatManager.Models.OnlineUsers.GetSessionUser().Id)
                                 {
@@ -98,13 +89,13 @@
                                     </div>
 
                                 }
-                            
+
+                            }
                         }
-                    }
 
-                </div>
+                    </div>
 
-                    
+
 
                 </div>
                 <div class="sendMessageLayout">
@@ -112,8 +103,17 @@
                     <span id="send" class="icon fa fa-paper-plane" title="Envoyer" data-placement="bottom"></span>
                 </div>
             </div>
+        </div>
     </div>
-</div>
+
+}
+else
+{
+@*<div id="#ChatMod">
+    @{Html.RenderPartial("ChatModeration");}
+</div>*@
+}
+
 
 
 
@@ -121,17 +121,10 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script defer>
 
-        // PARTIAL REFRESH
-        window.setInterval(function () {
-            UpdateFriendsList();
-            //UpdateMessages();
-            }, 5000);
-       // let status = new PartialRefresh("/Chat/GetMessagesViewBag", "messageBody", 5, UpdateMessages)
-
         $("#message").hide();
         $("#send").hide();
 
-        // MESSAGES
+        // MESSAGE FUNCTIONS
 
         function SendMessage(userId) {
             //sending the message
@@ -167,7 +160,7 @@
             //        }
             //    });
             //}
-            
+
         }
 
         function EditMessage(id, editedMessage) {
@@ -223,9 +216,9 @@
         }
 
         function ShowMessages(userId, div) {
-            console.log(userId);
-            console.log(div);
-            if (!userId || !div) {
+
+
+            if (!userId || !div || div.length <= 0) {
                 console.log("EMPTY")
                 $("#messageBody").find(".sent").remove();
                 $("#messageBody").find(".received").remove();
@@ -312,14 +305,12 @@
 
         function UpdateMessages() {
             var selected = $(".selectedTarget");
-            console.log("After")
             var userId = 0;
 
             if (selected) {
                 userId = $(".selectedTarget").data("user-id");
             }
-            var div = 
-            $("#user_"+userId)
+
             ShowMessages(userId, selected);
         }
 
@@ -328,24 +319,27 @@
             $.ajax({
                 url: "/Chat/GetFriendsList",
                 type: "GET",
-                data: {  },
+                data: {},
                 success: function (updatedList) {
-                    console.log("Before")
+                    var currentSelectedId = $(".selectedTarget").data("user-id");
 
                     $(".friendsListContainer").html($(updatedList).find('.friendsListContainer').html());
+                    var selectedUser = $(".friendsListContainer").find("[data-user-id='" + currentSelectedId + "']");
+                    selectedUser.addClass("selectedTarget");
+
                     UpdateMessages();
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     console.log("Error sending message: " + errorThrown);
                 }
             });
-            
+
         }
 
         $(".unselectedTarget").click(function () {
             UpdateMessageHeader($(this));
             var userId = $(".selectedTarget").data("user-id");
-            ShowMessages(userId,$(this));
+            ShowMessages(userId, $(this));
         })
 
         $("#send").click(function () {
@@ -354,7 +348,7 @@
             SendMessage(userId);
             ShowMessages(userId, $('.selectedTarget'));
         })
-        
+
 
         $(document).keydown(function (event) {
             if (event.keyCode === 27) {
@@ -369,6 +363,16 @@
         });
 
         
+        setInterval(function () {
+            $('#ChatMod').load('/Chat/ChatModeration');
+        }, 2000);
+
+        // PARTIAL REFRESH
+        window.setInterval(function () {
+            UpdateFriendsList();
+            //UpdateMessages();
+        }, 5000);
+        // let status = new PartialRefresh("/Chat/GetMessagesViewBag", "messageBody", 5, UpdateMessages)
 
     </script>
 }

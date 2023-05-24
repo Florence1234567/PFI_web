@@ -1,0 +1,55 @@
+﻿@model Tuple<List<ChatManager.Models.User>, List<ChatManager.Models.ChatMessage>>
+
+@{
+    ViewBag.Title = "Conversations";
+}
+
+
+<div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
+    <img src="~/favicon.png" style="width: 56px;" />
+    <h3>Conversations</h3>
+    <hr />
+</div>
+
+@foreach (var message in Model.Item2)
+{
+
+    ChatManager.Models.User sender = null;
+    ChatManager.Models.User receiver = null;
+
+    foreach (var user in Model.Item1)
+    {
+        <span>@user.Id</span>
+        <span>@message.Sender</span>
+        <br />
+        if (user.Id == message.Sender)
+        {
+
+            sender = user;
+        }
+        else if (user.Id == message.Receiver)
+        {
+            receiver = user;
+        }
+    }
+
+    if (sender != null && receiver != null)
+    {
+        @Helper.AvatarUser(sender, "UserSmallAvatar", true)
+        @Helper.AvatarUser(receiver, "UserSmallAvatar", true)
+
+
+        @Helper.IconConfirmCmdWithParam("Chat", "AdminMessageDelete", message.Id, "fa-times smallerIcon", "Effacer ce message", "bottom")
+
+        <div class="sentLayout">
+
+            <div class="sent" id="sent_@message.Id" title="@message.Date">
+                @Helper.ParseContent(message.Message)
+            </div>
+        </div>
+        <br />
+    }
+
+
+
+}

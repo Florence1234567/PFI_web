@@ -16,6 +16,9 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
+            if (OnlineUsers.GetSessionUser().IsAdmin)
+                return RedirectToAction("ChatModeration");
+
             var users = new List<User>();
 
             var currentId = OnlineUsers.GetSessionUser().Id;
@@ -44,9 +47,9 @@ namespace ChatManager.Controllers
             var chatMessages = DB.ChatMessages.ToList().Where(message => message.Sender == 0).ToList();
 
 
-            var notifications = OnlineUsers.PopNotifications(currentId);
+           // var notifications = OnlineUsers.PopNotifications(currentId);
 
-            var tuple = new Tuple<List<User>, List<ChatMessage>, List<string>>(users, chatMessages, notifications);
+            var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
 
 
             return View(tuple);
@@ -62,9 +65,9 @@ namespace ChatManager.Controllers
             message.Sender == id && message.Receiver == currentId).ToList();
 
             var users = DB.Users.ToList();
-            var notifications = new List<string>();
+           // var notifications = new List<string>();
 
-            var tuple = new Tuple<List<User>, List<ChatMessage>, List<string>>(users, chatMessages, notifications);
+            var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
 
             return PartialView("Index", tuple);
         }
@@ -94,9 +97,9 @@ namespace ChatManager.Controllers
                 }
             }
 
-            var notifications = OnlineUsers.PopNotifications(currentId);
+            //var notifications = OnlineUsers.PopNotifications(currentId);
 
-            var tuple = new Tuple<List<User>, List<ChatMessage>, List<string>>(users, chatMessages, notifications);
+            var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
 
             return PartialView("Index", tuple);
         }
@@ -135,6 +138,35 @@ namespace ChatManager.Controllers
             DB.ChatMessages.Delete(id);
 
             return RedirectToAction("Index");
+        }
+
+
+
+        // Page Admin
+
+        public ActionResult ChatModeration()
+        {
+            if (!OnlineUsers.GetSessionUser().IsAdmin)
+                return RedirectToAction("Index");
+
+            var chatMessages = DB.ChatMessages.ToList();
+
+            var users = DB.Users.ToList();
+
+            var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
+
+            return View("ChatModeration",tuple);
+        }
+
+        [HttpGet]
+        public ActionResult AdminMessageDelete(int id)
+        {
+            if (OnlineUsers.GetSessionUser().IsAdmin)
+            {
+                DB.ChatMessages.Delete(id);
+            }
+
+            return RedirectToAction("ChatModeration");
         }
     }
 }
