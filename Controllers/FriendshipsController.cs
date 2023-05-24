@@ -10,12 +10,6 @@ namespace ChatManager.Controllers
 {
     public class FriendshipsController : Controller
     {
-        [HttpPost]
-        public JsonResult GetFriendshipStatus(int id)
-        { //DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id)
-            return Json(DB.Users.ToList());
-        }
-
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
@@ -32,6 +26,12 @@ namespace ChatManager.Controllers
 
         public ActionResult SendFriendshipRequest(int id)
         {
+            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == id || 
+            m.IdUser1 == OnlineUsers.GetSessionUser().Id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
+
+            if (friendships.Count() != 0)
+                DB.Friendships.Delete(friendships.First().Id);
+
             DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id));
 
             return RedirectToAction("Index");
@@ -57,9 +57,19 @@ namespace ChatManager.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult RemoveFriendshipRequest(int id)
+        public ActionResult RemoveFriendshipRequest1(int id)
         {
             var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == OnlineUsers.GetSessionUser().Id && m.IdUser2 == id);
+
+            DB.Friendships.Delete(friendships.First().Id);
+
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult RemoveFriendshipRequest2(int id)
+        {
+            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
+
             DB.Friendships.Delete(friendships.First().Id);
 
             return RedirectToAction("Index");
