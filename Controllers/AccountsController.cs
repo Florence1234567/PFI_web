@@ -323,13 +323,12 @@ namespace ChatManager.Controllers
             user.Blocked = currentUser.Blocked;
             user.Avatar = currentUser.Avatar;
             user.CreationDate = currentUser.CreationDate;
+            user.Password = (string)Session["UnchangedPasswordCodeAdmin"];
+            user.ConfirmPassword = (string)Session["UnchangedPasswordCodeAdmin"];
 
             string newEmail = "";
             if (ModelState.IsValid)
             {
-                if (user.Password == (string)Session["UnchangedPasswordCodeAdmin"])
-                    user.Password = user.ConfirmPassword = currentUser.Password;
-
                 if (user.Email != currentUser.Email)
                 {
                     newEmail = user.Email;
