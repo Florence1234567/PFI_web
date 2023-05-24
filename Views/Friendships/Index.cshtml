@@ -68,7 +68,7 @@
                                 else if (friendship.Status == "Requested" && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser2)
                                 {
                                     <div style="display: grid; grid-template-columns: 30px 30px;">
-                                        <a href="/Friendships/AcceptF\riendshipRequest/@item.Id">
+                                        <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
                                             <span class="fa green fa-check icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
                                         </a>
                                         <a href="/Friendships/DeclineFriendshipRequest/@item.Id">
@@ -149,19 +149,23 @@
             status.command("/Friendships/SetFilterNotFriend?check=" + $(this).is(':checked'));
         })
 
-        window.setInterval(function () {
+        $(function () {
+            setInterval(RefreshPage, 2000);
+        });
+
+        function RefreshPage() {
             $.ajax({
-                url: '/Chat',
                 type: "POST",
-                success: function (partialViewHtml) {
-                    $("#friendshipListContainer").html(partialViewHtml);
-                });
-        },
-            error: function () {
-                alert('Erreur');
-        }
+                url: "/Friendships/Index",
+                dataType: "html",
+                success: function (response) {
+                    $('#friendshipListContainer').html(response);
+                },
+                error: function (response) {
+                    alert('Erreur');
+                }
             });
-        }, 5000);
+        }
 
     </script>
 }
