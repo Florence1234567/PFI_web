@@ -21,7 +21,7 @@ namespace ChatManager.Controllers
             var currentId = OnlineUsers.GetSessionUser().Id;
 
             var friendships = DB.Friendships.ToList().Where(m => (m.IdUser1 == currentId
-            || m.IdUser2 == currentId) && m.Status == "Requested");
+            || m.IdUser2 == currentId) && m.Status == "Friend");
 
             foreach (var friendship in friendships)
             {
@@ -80,7 +80,7 @@ namespace ChatManager.Controllers
             var users = new List<User>();
 
             var friendships = DB.Friendships.ToList().Where(m => (m.IdUser1 == currentId
-             || m.IdUser2 == currentId) && m.Status == "Declined");
+             || m.IdUser2 == currentId) && m.Status == "Friend");
 
             foreach (var friendship in friendships)
             {
