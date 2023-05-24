@@ -53,7 +53,7 @@ namespace ChatManager.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetMessagesViewBag(int id)
+        public ActionResult GetMessages(int id)
         {
             var currentId = OnlineUsers.GetSessionUser().Id;
 
@@ -69,18 +69,40 @@ namespace ChatManager.Controllers
             return PartialView("Index", tuple);
         }
 
-
         [HttpGet]
-        public ActionResult GetMessages(int id)
+        public ActionResult GetFriendsList()
         {
             var currentId = OnlineUsers.GetSessionUser().Id;
 
-            var chatMessages = DB.ChatMessages.ToList().Where(message => 
-            message.Sender == currentId && message.Receiver == id ||
-            message.Sender == id && message.Receiver == currentId).ToList();
+            var chatMessages = DB.ChatMessages.ToList().Where(message =>
+            message.Sender == currentId || message.Receiver == currentId).ToList();
 
-            return Json(chatMessages, JsonRequestBehavior.AllowGet);
+            var users = new List<User>();
+
+            var friendships = DB.Friendships.ToList().Where(m => (m.IdUser1 == currentId
+             || m.IdUser2 == currentId) && m.Status == "Declined");
+
+            foreach (var friendship in friendships)
+            {
+                if (friendship.IdUser1 != currentId)
+                {
+                    users.Add(DB.Users.Get(friendship.IdUser1));
+                }
+                else
+                {
+                    users.Add(DB.Users.Get(friendship.IdUser2));
+                }
+            }
+
+            var notifications = OnlineUsers.PopNotifications(currentId);
+
+            var tuple = new Tuple<List<User>, List<ChatMessage>, List<string>>(users, chatMessages, notifications);
+
+            return PartialView("Index", tuple);
         }
+
+
+
 
         [HttpPost]
         public ActionResult SendMessage(int id, string message)
