@@ -1,0 +1,45 @@
+﻿@model Tuple<List<ChatManager.Models.User>, List<ChatManager.Models.ChatMessage>>
+
+@foreach (var message in Model.Item2)
+{
+
+    ChatManager.Models.User sender = null;
+    ChatManager.Models.User receiver = null;
+
+    foreach (var user in Model.Item1)
+    {
+
+        if (user.Id == message.Sender)
+        {
+
+            sender = user;
+        }
+        else if (user.Id == message.Receiver)
+        {
+            receiver = user;
+        }
+    }
+
+    if (sender != null && receiver != null)
+    {
+        <div style="display:flex; margin: 5px inherit !important;">
+            <div style="margin:5px;">
+                @Helper.AvatarUser(sender, "UserSmallAvatar", true)
+            </div>
+            <div style="margin:5px;">
+                @Helper.AvatarUser(receiver, "UserSmallAvatar", true)
+            </div>
+            <div style="margin-top:10px;">
+                @Helper.IconConfirmCmdWithParam("Chat", "AdminMessageDelete", message.Id, "fa-times icon", "Effacer ce message", "bottom")
+            </div>
+
+            <div class="sentLayout" style="float: left !important; clear: left; justify-content: flex-start">
+
+                <div class="sent" id="sent_@message.Id" title="@message.Date">
+                    @Helper.ParseContent(message.Message)
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+}

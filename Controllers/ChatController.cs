@@ -149,13 +149,24 @@ namespace ChatManager.Controllers
             if (!OnlineUsers.GetSessionUser().IsAdmin)
                 return RedirectToAction("Index");
 
-            var chatMessages = DB.ChatMessages.ToList();
+            var chatMessages = DB.ChatMessages.ToList().OrderBy(m => m.Date).ToList();
 
             var users = DB.Users.ToList();
 
             var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
 
             return View("ChatModeration",tuple);
+        }
+
+        public ActionResult ConversationsList()
+        {
+            var chatMessages = DB.ChatMessages.ToList().OrderBy(m => m.Date).ToList();
+
+            var users = DB.Users.ToList();
+
+            var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
+
+            return PartialView("ConversationsList", tuple);
         }
 
         [HttpGet]

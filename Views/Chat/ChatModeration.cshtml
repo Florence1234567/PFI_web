@@ -11,45 +11,19 @@
     <hr />
 </div>
 
-@foreach (var message in Model.Item2)
-{
+<div id="#ConversationsList">
+    @{Html.RenderPartial("ConversationsList");}
+</div>
 
-    ChatManager.Models.User sender = null;
-    ChatManager.Models.User receiver = null;
-
-    foreach (var user in Model.Item1)
-    {
-        <span>@user.Id</span>
-        <span>@message.Sender</span>
-        <br />
-        if (user.Id == message.Sender)
-        {
-
-            sender = user;
-        }
-        else if (user.Id == message.Receiver)
-        {
-            receiver = user;
-        }
-    }
-
-    if (sender != null && receiver != null)
-    {
-        @Helper.AvatarUser(sender, "UserSmallAvatar", true)
-        @Helper.AvatarUser(receiver, "UserSmallAvatar", true)
-
-
-        @Helper.IconConfirmCmdWithParam("Chat", "AdminMessageDelete", message.Id, "fa-times smallerIcon", "Effacer ce message", "bottom")
-
-        <div class="sentLayout">
-
-            <div class="sent" id="sent_@message.Id" title="@message.Date">
-                @Helper.ParseContent(message.Message)
-            </div>
-        </div>
-        <br />
-    }
-
-
+@section Scripts {
+    <script defer>
+        $(function () {
+            setInterval(function () {
+                console.log("refresh")
+                $('#ConversationsList').load('/Chat/ConversationsList/');
+            }, 5000);
+        });
+    </script>
+}
 
 }
