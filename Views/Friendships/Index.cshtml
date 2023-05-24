@@ -46,11 +46,20 @@
 
         $("#FilterNotFriend").click(() => {
             $.ajax({
-                url: '/Chat/Index',
+                url: "/Friendships/SetFilterNotFriend?isChecked",
+                data: { isChecked: $(this).is(':checked') },
                 type: 'post',
-                success: function (data) {
-                    console.log('Succes');
-                }
+            });
+        });
+
+        $("#FilterBlocked").click(() => {
+            var filterBlocked = $("#FilterBlocked");
+            $.ajax({
+                url: "/Friendships/SetFilterBlocked?isChecked" + filterBlocked,
+                type: 'post',
+                success: (function () {
+                    console.log(filterBlocked);
+                })
             });
         });
 

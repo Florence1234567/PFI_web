@@ -304,8 +304,8 @@ namespace ChatManager.Controllers
             User userToEdit = DB.Users.FindUser(id);
             if (userToEdit != null)
             {
-                Session["UnchangedPasswordCode"] = Guid.NewGuid().ToString().Substring(0, 12);
-                userToEdit.Password = userToEdit.ConfirmPassword = (string)Session["UnchangedPasswordCode"];
+                Session["UnchangedPasswordCodeAdmin"] = Guid.NewGuid().ToString().Substring(0, 12);
+                userToEdit.Password = userToEdit.ConfirmPassword = (string)Session["UnchangedPasswordCodeAdmin"];
                 return View(userToEdit);
             }
 
@@ -327,7 +327,7 @@ namespace ChatManager.Controllers
             string newEmail = "";
             if (ModelState.IsValid)
             {
-                if (user.Password == (string)Session["UnchangedPasswordCode"])
+                if (user.Password == (string)Session["UnchangedPasswordCodeAdmin"])
                     user.Password = user.ConfirmPassword = currentUser.Password;
 
                 if (user.Email != currentUser.Email)
