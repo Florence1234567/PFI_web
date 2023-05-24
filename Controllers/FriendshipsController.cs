@@ -18,6 +18,14 @@ namespace ChatManager.Controllers
             ViewBag.Friendship = friendship;
             return View(DB.Users.ToList());
         }
+        [OnlineUsers.UserAccess]
+        public ActionResult FriendshipsList()
+        {
+            int id = OnlineUsers.GetSessionUser().Id;
+            var friendship = DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id);
+            ViewBag.Friendship = friendship;
+            return PartialView(DB.Users.ToList());
+        }
         public ActionResult SetFriendshipFilter(int id)
         {
             Session["FriendshipFilter"] = id;
@@ -26,7 +34,7 @@ namespace ChatManager.Controllers
 
         public ActionResult SendFriendshipRequest(int id)
         {
-            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == id || 
+            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == id ||
             m.IdUser1 == OnlineUsers.GetSessionUser().Id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
 
             if (friendships.Count() != 0)
