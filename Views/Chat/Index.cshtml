@@ -1,4 +1,4 @@
-﻿@model Tuple<List<ChatManager.Models.User>, List<ChatManager.Models.ChatMessage>>
+﻿@model Tuple<List<ChatManager.Models.User>, List<ChatManager.Models.ChatMessage>, List<string>>
 
 @{
     ViewBag.Title = "ChatRoom";
@@ -14,15 +14,43 @@
 <div class="main">
     <div style="display: grid; grid-template-columns: 60px auto; column-gap: 10px;">
         <div class="friendsListContainer" id="friendListContainer">
-            @foreach (var item in Model.Item1)
-            {
-                if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
+            @{
+                foreach (var item in Model.Item1)
                 {
-                    <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id">
-                        @Helper.AvatarUser(item, "UserSmallAvatar", true)
-                    </div>
+                    bool showNotif = false;
+                    
+                    foreach (var message in Model.Item2)
+                    {
+                        foreach (string notif in Model.Item3)
+                        {
+                            if (notif == message.Message)
+                            {
+                                showNotif = true;
+
+                            }
+                        }
+
+                    }
+
+                    if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
+                    {
+                        <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id">
+                            @Helper.AvatarUser(item, "UserSmallAvatar", true)
+
+                            @{
+                                if (showNotif)
+                                {
+                                    <div id="unread" class="icon fa fa-d smallerIcon">
+
+                                    </div>
+                                }
+                            }
+
+                        </div>
+                    }
                 }
             }
+
         </div>
         <div>
             <div class="messagesPanel" id="messagePanel">
@@ -42,10 +70,6 @@
                                     @message.Date
                                 </div>
                             }
-
-
-                            if (message.Sender == 1 || message.Receiver == 1)
-                            {
 
                                 if (message.Sender == ChatManager.Models.OnlineUsers.GetSessionUser().Id)
                                 {
@@ -75,7 +99,7 @@
                                     </div>
 
                                 }
-                            }
+                            
                         }
                     }
 
@@ -97,6 +121,8 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script defer>
+        let status = new PartialRefresh("/Chat/GetMessagesViewBag", "messageBody", 5, UpdateMessages)
+
         $("#message").hide();
         $("#send").hide();
 
@@ -192,6 +218,9 @@
         }
 
         function ShowMessages(userId, div) {
+            console.log(userId);
+            console.log(div);
+
             $.ajax({
                 url: "/Chat/GetMessagesViewBag",
                 type: "GET",
@@ -313,6 +342,7 @@
 
             div.addClass("selectedTarget");
             div.removeClass("unselectedTarget");
+            div.find("#unread").hide();
 
             //update header
             var avatarClone = div.find(".UserSmallAvatar").clone();
@@ -323,6 +353,18 @@
 
             ShowSelectedFriend(friendName, avatarClone);
 
+        }
+
+        function UpdateMessages() {
+            var selected = $(".selectedTarget");
+            var userId = 0;
+
+            if (selected) {
+                userId = $(".selectedTarget").data("user-id");
+            }
+            var div = 
+            $("#user_"+userId)
+            ShowMessages(userId, selected);
         }
 
 
@@ -343,6 +385,12 @@
         $(document).keydown(function (event) {
             if (event.keyCode === 27) {
                 $("#message").val("");
+            }
+            if (event.keyCode === 13) {
+                var userId = $(".selectedTarget").data("user-id");
+
+                SendMessage(userId);
+                ShowMessages(userId, $('.selectedTarget'));
             }
         });
 
