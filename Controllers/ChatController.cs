@@ -16,8 +16,6 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
-            if (OnlineUsers.GetSessionUser().IsAdmin)
-                return RedirectToAction("ChatModeration");
 
             var users = new List<User>();
 
@@ -149,7 +147,7 @@ namespace ChatManager.Controllers
             if (!OnlineUsers.GetSessionUser().IsAdmin)
                 return RedirectToAction("Index");
 
-            var chatMessages = DB.ChatMessages.ToList().OrderBy(m => m.Date).ToList();
+            var chatMessages = DB.ChatMessages.ToList().OrderByDescending(m => m.Date).ToList();
 
             var users = DB.Users.ToList();
 
@@ -160,7 +158,10 @@ namespace ChatManager.Controllers
 
         public ActionResult ConversationsList()
         {
-            var chatMessages = DB.ChatMessages.ToList().OrderBy(m => m.Date).ToList();
+            if (!OnlineUsers.GetSessionUser().IsAdmin)
+                return RedirectToAction("Index");
+
+            var chatMessages = DB.ChatMessages.ToList().OrderByDescending(m => m.Date).ToList();
 
             var users = DB.Users.ToList();
 
