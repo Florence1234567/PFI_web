@@ -25,7 +25,7 @@
     @Html.ValidationMessageFor(model => model.AvatarImageData, "", new { @class = "text-danger" })
 
     <fieldset class="formField">
-        <div class="legend">@Html.DisplayNameFor("Type d'utilisateur")</div>
+        <div class="legend">@Html.DisplayName("Type d'utilisateur")</div>
         @Helper.ListToRadioButtonGroup("UserTypeId", (SelectList)ViewBag.UserType, Model.UserTypeId)
     </fieldset>
 

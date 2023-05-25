@@ -23,7 +23,7 @@
                             <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
                                 @Helper.AvatarUser(item, "UserSmallAvatar")
                             </a>
-                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id), item.Blocked)
 
                             <div style="display: grid; grid-template-columns: 30px 30px;">
                                 <span class="fa green fa-clock-o icon" title="En attente de  @item.GetFullName(false)"></span>
@@ -43,7 +43,7 @@
                             <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
                                 @Helper.AvatarUser(item, "UserSmallAvatar")
                             </a>
-                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id), item.Blocked)
 
                             <div style="display: grid; grid-template-columns: 30px 30px;">
                                 <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
@@ -65,7 +65,7 @@
                             <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
                                 @Helper.AvatarUser(item, "UserSmallAvatar")
                             </a>
-                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id), item.Blocked)
 
                             <div style="display: grid; grid-template-columns: 30px 30px;">
                                 <span class="fa green fa-check-circle icon" title="Ami avec @item.GetFullName(false)"></span>
@@ -96,7 +96,7 @@
                             <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
                                 @Helper.AvatarUser(item, "UserSmallAvatar")
                             </a>
-                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id), item.Blocked)
 
                             <div style="display: grid; grid-template-columns: 30px 30px;">
                                 <span class="fa red fa-times-circle icon" title="Demande d'ami refusé par @item.GetFullName()"></span>
@@ -120,7 +120,7 @@
                     <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
                         @Helper.AvatarUser(item, "UserSmallAvatar")
                     </a>
-                    @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+                    @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id), item.Blocked)
                     <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
                 </div>
 
@@ -134,7 +134,7 @@
                     <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
                         @Helper.AvatarUser(item, "UserSmallAvatar")
                     </a>
-                    @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+                    @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id), item.Blocked)
                     <a href="/Friendships/SendFriendshipRequest/@item.Id">
                         <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
                     </a>
