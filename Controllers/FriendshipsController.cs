@@ -15,6 +15,16 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
+            if(Session["FilterNotFriend"] == null)
+            {
+                Session["FilterNotFriend"] = true;
+                Session["FilterFriend"] = true;
+                Session["FilterBlocked"] = true;
+                Session["FilterDeclined"] = true;
+                Session["FilterRequest"] = true;
+                Session["FilterPending"] = true;
+
+            }
             int id = OnlineUsers.GetSessionUser().Id;
             var friendship = DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id);
             ViewBag.Friendship = friendship;
@@ -100,8 +110,8 @@ namespace ChatManager.Controllers
 
         public ActionResult SendFriendshipRequest(int id)
         {
-            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == id ||
-            m.IdUser1 == OnlineUsers.GetSessionUser().Id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
+            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == OnlineUsers.GetSessionUser().Id ||
+            m.IdUser1 == id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
 
             if (friendships.Count() != 0)
                 DB.Friendships.Delete(friendships.First().Id);
@@ -109,7 +119,6 @@ namespace ChatManager.Controllers
             DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id));
 
             OnlineUsers.AddNotification(id, $"Vous avez reçu une demande d'amitié de {DB.Users.Get(id).FirstName} {DB.Users.Get(id).LastName}");
-
 
             return RedirectToAction("Index");
         }

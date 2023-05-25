@@ -71,10 +71,11 @@
                                 </div>
                                 <div class="editMessage" style="display:block" id="edit_@message.Id">
                                     <input class="sent form-control" value="@message.Message" />
-                                    <span id="update_@message.Id" style="display:inline;" class="icon fa fa-check smallerIcon" title="Modifier ce message" data-placement="bottom">
-                                    </span>
-                                    @Helper.IconConfirmCmdWithParam("Chat", "DeleteMessage", message.Id, "fa-times smallerIcon", "Effacer ce message", "bottom")
-
+                                    <div style="display: grid; grid-template-columns: 30px 30px;">
+                                        <span id="update_@message.Id" style="display:inline;" class="icon fa fa-check smallerIcon" title="Modifier ce message" data-placement="bottom">
+                                        </span>
+                                        @Helper.IconConfirmCmdWithParam("Chat", "DeleteMessage", message.Id, "fa-times smallerIcon", "Effacer ce message", "bottom")
+                                    </div>
                                 </div>
 
                             }
