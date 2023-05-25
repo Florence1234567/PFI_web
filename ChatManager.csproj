@@ -192,6 +192,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="info-icon.png" />
+    <Content Include="iso-3166.txt" />
     <Content Include="Scripts\bootbox.js" />
     <Content Include="Scripts\bootbox.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -268,6 +269,10 @@
     <Content Include="Views\Friendships\SetFilterBlocked.cshtml" />
     <Content Include="Views\Chat\ConversationsList.cshtml" />
     <Content Include="Views\Friendships\SendFriendshipRequest2.cshtml" />
+    <Content Include="Views\Friendships\SetFilterRequest1.cshtml" />
+    <Content Include="Views\Friendships\SetFilterRequest2.cshtml" />
+    <Content Include="Views\Friendships\SetFilterFriend.cshtml" />
+    <Content Include="Views\Friendships\SetFilterDeclined.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

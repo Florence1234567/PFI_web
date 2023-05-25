@@ -1,1 +1,1 @@
-[{"Id":1,"IdUser1":9,"IdUser2":10,"Status":"Friend"},{"Id":2,"IdUser1":9,"IdUser2":1,"Status":"Friend"},{"Id":3,"IdUser1":10,"IdUser2":11,"Status":"Friend"}]
+[{"Id":3,"IdUser1":10,"IdUser2":11,"Status":"Friend"},{"Id":4,"IdUser1":1,"IdUser2":7,"Status":"Requested"},{"Id":5,"IdUser1":9,"IdUser2":1,"Status":"Requested"},{"Id":6,"IdUser1":9,"IdUser2":10,"Status":"Friend"}]

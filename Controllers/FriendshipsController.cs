@@ -15,9 +15,6 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
-            Session["FilterNotFriend"] = true;
-            Session["FilterBlocked"] = true;
-
             int id = OnlineUsers.GetSessionUser().Id;
             var friendship = DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id);
             ViewBag.Friendship = friendship;
@@ -41,9 +38,6 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult FriendshipsList()
         {
-            Session["FilterNotFriend"] = true;
-            Session["FilterBlocked"] = true;
-
             int id = OnlineUsers.GetSessionUser().Id;
             var friendship = DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id);
             ViewBag.Friendship = friendship;
@@ -71,6 +65,30 @@ namespace ChatManager.Controllers
         public ActionResult SetFilterNotFriend(bool isChecked)
         {
             Session["FilterNotFriend"] = isChecked;
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult SetFilterRequest1(bool isChecked)
+        {
+            Session["FilterRequest"] = isChecked;
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult SetFilterRequest2(bool isChecked)
+        {
+            Session["FilterPending"] = isChecked;
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult SetFilterFriend(bool isChecked)
+        {
+            Session["FilterFriend"] = isChecked;
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult SetFilterDeclined(bool isChecked)
+        {
+            Session["FilterDeclined"] = isChecked;
             return RedirectToAction("Index");
         }
 

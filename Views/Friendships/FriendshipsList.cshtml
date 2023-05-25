@@ -9,107 +9,140 @@
 {
     if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
     {
-
         foreach (var friendship in ViewBag.friendship)
         {
             listEmpty = false;
             if (friendship.IdUser1 == item.Id || friendship.IdUser2 == item.Id)
             {
                 noFriends = false;
+                if (Session["FilterPending"] != null)
+                {
+                    if (friendship.Status == "Requested" && (bool)Session["FilterPending"] && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
+                    {
+                        <div class="friendContainer">
+                            <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
+                                @Helper.AvatarUser(item, "UserSmallAvatar")
+                            </a>
+                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+
+                            <div style="display: grid; grid-template-columns: 30px 30px;">
+                                <span class="fa green fa-clock-o icon" title="En attente de  @item.GetFullName(false)"></span>
+                                <a href="/Friendships/RemoveFriendshipRequest1/@item.Id">
+                                    <span class="fa red fa-times icon" title="Retirer la demande d'ami à @item.GetFullName(false)"></span>
+                                </a>
+                            </div>
+                        </div>
+
+                    }
+                }
+                if (Session["FilterRequest"] != null)
+                {
+                    if (friendship.Status == "Requested" && (bool)Session["FilterRequest"] && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser2)
+                    {
+                        <div class="friendContainer">
+                            <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
+                                @Helper.AvatarUser(item, "UserSmallAvatar")
+                            </a>
+                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+
+                            <div style="display: grid; grid-template-columns: 30px 30px;">
+                                <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
+                                    <span class="fa green fa-check icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
+                                </a>
+                                <a href="/Friendships/DeclineFriendshipRequest/@item.Id">
+                                    <span class="fa red fa-times icon" title="Refuser la demande d'ami de @item.GetFullName(false)"></span>
+                                </a>
+                            </div>
+                        </div>
+
+                    }
+                }
+                if (Session["FilterFriend"] != null)
+                {
+                    if (friendship.Status == "Friend" && (bool)Session["FilterFriend"])
+                    {
+                        <div class="friendContainer">
+                            <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
+                                @Helper.AvatarUser(item, "UserSmallAvatar")
+                            </a>
+                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+
+                            <div style="display: grid; grid-template-columns: 30px 30px;">
+                                <span class="fa green fa-check-circle icon" title="Ami avec @item.GetFullName(false)"></span>
+                                @{
+                                    if (ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
+                                    {
+                                        <a href="/Friendships/RemoveFriendshipRequest1/@item.Id">
+                                            <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="/Friendships/RemoveFriendshipRequest2/@item.Id">
+                                            <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
+                                        </a>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                    }
+                }
+                if (Session["FilterDeclined"] != null)
+                {
+                    if (friendship.Status == "Declined" && (bool)Session["FilterDeclined"])
+                    {
+                        <div class="friendContainer">
+                            <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
+                                @Helper.AvatarUser(item, "UserSmallAvatar")
+                            </a>
+                            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+
+                            <div style="display: grid; grid-template-columns: 30px 30px;">
+                                <span class="fa red fa-times-circle icon" title="Demande d'ami refusé par @item.GetFullName()"></span>
+                                <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                                    <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
+                                </a>
+                            </div>
+                        </div>
+
+                    }
+
+                }
+            }
+        }
+
+        if (Session["FilterBlocked"] != null)
+        {
+            if (item.Blocked && (bool)Session["FilterBlocked"])
+            {
+                <div class="friendContainer">
+                    <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
+                        @Helper.AvatarUser(item, "UserSmallAvatar")
+                    </a>
+                    @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+                    <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
+                </div>
+
+            }
+        }
+        if (Session["FilterNotFriend"] != null && !item.Blocked)
+        {
+            if (listEmpty || noFriends && (bool)Session["FilterNotFriend"])
+            {
                 <div class="friendContainer">
                     <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
                         @Helper.AvatarUser(item, "UserSmallAvatar")
                     </a>
                     @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
                     <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                        @{
-                            if (friendship.Status == "Requested" && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
-                            {
-                                <div style="display: grid; grid-template-columns: 30px 30px;">
-                                    <span class="fa green fa-clock-o icon" title="En attente de  @item.GetFullName(false)"></span>
-                                    <a href="/Friendships/RemoveFriendshipRequest1/@item.Id">
-                                        <span class="fa red fa-times icon" title="Retirer la demande d'ami à @item.GetFullName(false)"></span>
-                                    </a>
-                                </div>
-                            }
-                            else if (friendship.Status == "Requested" && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser2)
-                            {
-                                <div style="display: grid; grid-template-columns: 30px 30px;">
-                                    <a href="/Friendships/AcceptFriendshipRequest/@item.Id">
-                                        <span class="fa green fa-check icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
-                                    </a>
-                                    <a href="/Friendships/DeclineFriendshipRequest/@item.Id">
-                                        <span class="fa red fa-times icon" title="Refuser la demande d'ami de @item.GetFullName(false)"></span>
-                                    </a>
-                                </div>
-                            }
-                            else if (friendship.Status == "Friend")
-                            {
-                                <div style="display: grid; grid-template-columns: 30px 30px;">
-                                    <span class="fa green fa-check-circle icon" title="Accepter la demande d'ami de @item.GetFullName(false)"></span>
-                                    @{
-                                        if (ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
-                                        {
-                                            <a href="/Friendships/RemoveFriendshipRequest1/@item.Id">
-                                                <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <a href="/Friendships/RemoveFriendshipRequest2/@item.Id">
-                                                <span class="fa red fa-times icon" title="Retirer l'amitié avec @item.GetFullName(false)"></span>
-                                            </a>
-                                        }
-                                    }
-
-                                </div>
-                            }
-                            else if (friendship.Status == "Declined")
-                            {
-                                <div style="display: grid; grid-template-columns: 30px 30px;">
-                                    <span class="fa red fa-times-circle icon" title="Demande d'ami refusé par @item.GetFullName()"></span>
-                                    <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                                        <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
-                                    </a>
-                                </div>
-
-                            }
-                        }
+                        <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
+                    </a>
                 </div>
             }
-            if (Session["FilterBlocked"] != null)
-            {
-                if (item.Blocked && (bool)Session["FilterBlocked"])
-                {
-                    <div class="friendContainer">
-                        <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
-                            @Helper.AvatarUser(item, "UserSmallAvatar")
-                        </a>
-                        @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
-                        <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
-                    </div>
-
-                }
-            }
-            if (Session["FilterNotFriend"] != null)
-            {
-                if ((listEmpty || noFriends) && (bool)Session["FilterNotFriend"])
-                {
-                    <div class="friendContainer">
-                        <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
-                            @Helper.AvatarUser(item, "UserSmallAvatar")
-                        </a>
-                        @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
-                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                            <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
-                        </a>
-                    </div>
-                }
-            }
-
             noFriends = true;
+
+            listEmpty = true;
         }
     }
-
-
 }

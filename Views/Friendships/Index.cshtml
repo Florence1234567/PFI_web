@@ -56,6 +56,38 @@
             });
         });
 
+        $("#FilterRequest").click(function () {
+            $.ajax({
+                url: "/Friendships/SetFilterRequest1/",
+                data: { isChecked: $(this).is(':checked') },
+                type: 'POST',
+            });
+        });
+
+        $("#FilterPending").click(function () {
+            $.ajax({
+                url: "/Friendships/SetFilterRequest2/",
+                data: { isChecked: $(this).is(':checked') },
+                type: 'POST',
+            });
+        });
+
+        $("#FilterFriend").click(function () {
+            $.ajax({
+                url: "/Friendships/SetFilterFriend/",
+                data: { isChecked: $(this).is(':checked') },
+                type: 'POST',
+            });
+        });
+
+        $("#FilterDeclined").click(function () {
+            $.ajax({
+                url: "/Friendships/SetFilterDeclined/",
+                data: { isChecked: $(this).is(':checked') },
+                type: 'POST',
+            });
+        });
+
         $("#FilterBlocked").click(function () {
             $.ajax({
                 url: "/Friendships/SetFilterBlocked/",
