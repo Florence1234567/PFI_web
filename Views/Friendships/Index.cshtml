@@ -45,12 +45,8 @@
         });
 
         $("#FilterNotFriend").click(function () {
-            console.log($(this).is(":checked"));
-            console.log($(this).prop("checked"))
-
-
             $.ajax({
-                url: "/Friendships/SetFilterNotFriend?isChecked",
+                url: "/Friendships/SetFilterNotFriend/",
                 data: { isChecked: $(this).is(':checked') },
                 type: 'POST',
             });

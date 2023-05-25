@@ -16,7 +16,7 @@
             @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
 
             @{
-                if (item.Blocked)
+                if (item.Blocked && (bool)Session["FilterBlocked"])
                 {
                     <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
                 }
@@ -81,7 +81,7 @@
                             }
                         }
                     }
-                    if (listEmpty || noFriends)
+                    if ((listEmpty || noFriends) && (bool)Session["FilterNotFriend"])
                     {
                         <a href="/Friendships/SendFriendshipRequest/@item.Id">
                             <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
