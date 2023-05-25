@@ -36,16 +36,10 @@ namespace ChatManager.Controllers
                 }
             }
 
-            //var chatMessages = DB.ChatMessages.ToList().Where(message =>
-            //message.Sender != currentId && message.Receiver == currentId).ToList();
-            //foreach (var chatMessage in chatMessages)
-            //{
-            //    OnlineUsers.AddNotification(currentId, chatMessage.Message);
-            //}
+
             var chatMessages = DB.ChatMessages.ToList().Where(message => message.Sender == 0).ToList();
 
 
-           // var notifications = OnlineUsers.PopNotifications(currentId);
 
             var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
 
@@ -63,7 +57,6 @@ namespace ChatManager.Controllers
             message.Sender == id && message.Receiver == currentId).ToList();
 
             var users = DB.Users.ToList();
-           // var notifications = new List<string>();
 
             var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
 
@@ -95,7 +88,6 @@ namespace ChatManager.Controllers
                 }
             }
 
-            //var notifications = OnlineUsers.PopNotifications(currentId);
 
             var tuple = new Tuple<List<User>, List<ChatMessage>>(users, chatMessages);
 
@@ -109,7 +101,7 @@ namespace ChatManager.Controllers
         public ActionResult SendMessage(int id, string message)
         {
             DB.ChatMessages.Create(new ChatMessage(OnlineUsers.GetSessionUser().Id, id, message));
-            OnlineUsers.AddNotification(OnlineUsers.GetSessionUser().Id, message);
+            OnlineUsers.AddNotification(id, $"{DB.Users.Get(id).FirstName} {DB.Users.Get(id).LastName}: {message}");
 
             return RedirectToAction("Index");
         }

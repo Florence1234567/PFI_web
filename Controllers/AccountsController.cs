@@ -392,7 +392,7 @@ namespace ChatManager.Controllers
                     return View(loginCredential);
                 }
                 OnlineUsers.AddSessionUser(user.Id);
-                OnlineUsers.AddNotification(user.Id, $"Bonjour {user.GetFullName()}");
+               // OnlineUsers.AddNotification(user.Id, $"Bonjour {user.GetFullName()}");
                 Session["currentLoginId"] = DB.Users.AddLogin(user.Id).Id;
                 return RedirectToAction("Index", "Friendships");
             }

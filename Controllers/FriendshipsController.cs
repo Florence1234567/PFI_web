@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 using System.Web.UI;
 
 namespace ChatManager.Controllers
@@ -89,6 +90,9 @@ namespace ChatManager.Controllers
                 DB.Friendships.Delete(friendships.First().Id);
 
             DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id));
+
+            OnlineUsers.AddNotification(id, $"Vous avez reçu une demande d'amitié de {DB.Users.Get(id).FirstName} {DB.Users.Get(id).LastName}");
+
 
             return RedirectToAction("Index");
         }
