@@ -105,7 +105,7 @@ namespace ChatManager.Controllers
         {
             var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
             var friendship = DB.Friendships.Get(friendships.First().Id);
-            friendship.Status = "Friend";
+            friendship.Status = "Declined";
             DB.Friendships.Update(friendship);
 
             return RedirectToAction("Index");
