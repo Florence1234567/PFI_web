@@ -5,114 +5,107 @@
 }
 
 
-@if (!ChatManager.Models.OnlineUsers.GetSessionUser().IsAdmin)
-{
-    <div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
-        <img src="~/favicon.png" style="width: 56px;" />
-        <h3>Salle de discussions</h3>
-    </div>
 
-    <div class="main">
-        <div style="display: grid; grid-template-columns: 60px auto; column-gap: 10px;">
-            <div class="friendsListContainer" id="friendListContainer">
-                @{
-                    foreach (var item in Model.Item1)
-                    {
-                        bool showNotif = false;
+<div style="display: grid; grid-template-columns: 65px auto; align-items: center;">
+    <img src="~/favicon.png" style="width: 56px;" />
+    <h3>Salle de discussions</h3>
+</div>
+
+<div class="main">
+    <div style="display: grid; grid-template-columns: 60px auto; column-gap: 10px;">
+        <div class="friendsListContainer" id="friendListContainer">
+            @{
+                foreach (var item in Model.Item1)
+                {
+                    bool showNotif = false;
 
                         
 
-                        if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
+                    if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
+                    {
+                        <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id">
+                            @Helper.AvatarUser(item, "UserSmallAvatar", true)
+
+                            @{
+                                if (showNotif)
+                                {
+                                    <div id="unread" class="icon fa fa-d smallerIcon">
+
+                                    </div>
+                                }
+                            }
+
+                        </div>
+                                    }
+                                }
+            }
+
+        </div>
+        <div>
+            <div class="messagesPanel" id="messagePanel">
+                <div class="messagesHeader">
+                    <h4 id="Selected">Sélectionnez un ami.</h4>
+                </div>
+
+                <div id="messageBody">
+                    @{
+                        int nbMessages = 0;
+                        foreach (var message in Model.Item2)
                         {
-                            <div class="unselectedTarget" title="@item.FirstName @item.LastName" data-user-id="@item.Id">
-                                @Helper.AvatarUser(item, "UserSmallAvatar", true)
-
-                                @{
-                                    if (showNotif)
-                                    {
-                                        <div id="unread" class="icon fa fa-d smallerIcon">
-
-                                        </div>
-                                    }
-                                }
-
-                            </div>
-                                        }
-                                    }
-                }
-
-            </div>
-            <div>
-                <div class="messagesPanel" id="messagePanel">
-                    <div class="messagesHeader">
-                        <h4 id="Selected">Sélectionnez un ami.</h4>
-                    </div>
-
-                    <div id="messageBody">
-                        @{
-                            int nbMessages = 0;
-                            foreach (var message in Model.Item2)
+                            nbMessages++;
+                            if (nbMessages == 1)
                             {
-                                nbMessages++;
-                                if (nbMessages == 1)
-                                {
-                                    <div class="messageTime">
-                                        @message.Date
+                                <div class="messageTime">
+                                    @message.Date
+                                </div>
+                            }
+
+                            if (message.Sender == ChatManager.Models.OnlineUsers.GetSessionUser().Id)
+                            {
+
+                                <div class="sentLayout">
+
+                                    <div class="sent" id="sent_@message.Id" title="@message.Date">
+                                        @Helper.ParseContent(message.Message)
                                     </div>
-                                }
+                                </div>
+                                <div class="editMessage" style="display:block" id="edit_@message.Id">
+                                    <input class="sent form-control" value="@message.Message" />
+                                    <span id="update_@message.Id" style="display:inline;" class="icon fa fa-check smallerIcon" title="Modifier ce message" data-placement="bottom">
+                                    </span>
+                                    @Helper.IconConfirmCmdWithParam("Chat", "DeleteMessage", message.Id, "fa-times smallerIcon", "Effacer ce message", "bottom")
 
-                                if (message.Sender == ChatManager.Models.OnlineUsers.GetSessionUser().Id)
-                                {
-
-                                    <div class="sentLayout">
-
-                                        <div class="sent" id="sent_@message.Id" title="@message.Date">
-                                            @Helper.ParseContent(message.Message)
-                                        </div>
-                                    </div>
-                                    <div class="editMessage" style="display:block" id="edit_@message.Id">
-                                        <input class="sent form-control" value="@message.Message" />
-                                        <span id="update_@message.Id" style="display:inline;" class="icon fa fa-check smallerIcon" title="Modifier ce message" data-placement="bottom">
-                                        </span>
-                                        @Helper.IconConfirmCmdWithParam("Chat", "DeleteMessage", message.Id, "fa-times smallerIcon", "Effacer ce message", "bottom")
-
-                                    </div>
-
-                                }
-                                else
-                                {
-                                    <div class="receivedLayout">
-                                        <div class="received" id="received_@message.Id" title="@message.Date">
-                                            @Helper.ParseContent(message.Message)
-
-                                        </div>
-                                    </div>
-
-                                }
+                                </div>
 
                             }
+                            else
+                            {
+                                <div class="receivedLayout">
+                                    <div class="received" id="received_@message.Id" title="@message.Date">
+                                        @Helper.ParseContent(message.Message)
+
+                                    </div>
+                                </div>
+
+                            }
+
                         }
-
-                    </div>
-
-
+                    }
 
                 </div>
-                <div class="sendMessageLayout">
-                    <input id="message" class="form-control" style="width:100% !important; max-width:1000px !important;" placeholder="Tapez votre message ici ..." title="Les urls d'image sont prises en compte.">
-                    <span id="send" class="icon fa fa-paper-plane" title="Envoyer" data-placement="bottom"></span>
-                </div>
+
+
+
+            </div>
+            <div class="sendMessageLayout">
+                <input id="message" class="form-control" style="width:100% !important; max-width:1000px !important;" placeholder="Tapez votre message ici ..." title="Les urls d'image sont prises en compte.">
+                <span id="send" class="icon fa fa-paper-plane" title="Envoyer" data-placement="bottom"></span>
             </div>
         </div>
     </div>
+</div>
 
-}
-else
-{
-@*<div id="#ChatMod">
-    @{Html.RenderPartial("ChatModeration");}
-</div>*@
-}
+
 
 
 
@@ -127,20 +120,25 @@ else
         // MESSAGE FUNCTIONS
 
         function SendMessage(userId) {
-            //sending the message
-            $.ajax({
-                url: "/Chat/SendMessage",
-                type: "POST",
-                data: { id: userId, message: $("#message").val() },
-                success: function (response) {
-                    console.log("Message sent: " + $("#message").val());
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.log("Error sending message: " + errorThrown);
-                }
-            });
-            // Clear the message input
-            $("#message").val("");
+            var message = $("#message").val();
+            if (message != null && message.trim().length > 0) {
+                //sending the message
+                $.ajax({
+                    url: "/Chat/SendMessage",
+                    type: "POST",
+                    data: { id: userId, message: message },
+                    success: function (response) {
+                        console.log("Message sent: " + message);
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log("Error sending message: " + errorThrown);
+                    }
+                });
+                // Clear the message input
+                $("#message").val("");
+            }
+
+           
         }
 
         function DeleteMessage(id) {
@@ -216,6 +214,13 @@ else
         }
 
         function ShowMessages(userId, div) {
+            var currentEditedDiv = $("div.editMessage[style*='display: block']").first();
+            var editText = "";
+
+            if (currentEditedDiv.length > 0) {
+
+                editText = currentEditedDiv.find("input").val();
+            }
 
 
             if (!userId || !div || div.length <= 0) {
@@ -244,6 +249,16 @@ else
                                 ShowEditMessage($(this));
                             }
                         })
+
+                        if (currentEditedDiv.length > 0) {
+                            var editId = currentEditedDiv.attr("id").replace("edit_", "");
+
+                            ShowEditMessage($("#sent_" + editId))
+
+                            var editInput = $("div.editMessage[style*='display: block']").first().find('input');
+                            //editInput.focus();
+                            editInput.val(editText);
+                        }
 
                     },
                     error: function (xhr, textStatus, errorThrown) {
@@ -324,10 +339,24 @@ else
                     var currentSelectedId = $(".selectedTarget").data("user-id");
 
                     $(".friendsListContainer").html($(updatedList).find('.friendsListContainer').html());
+
                     var selectedUser = $(".friendsListContainer").find("[data-user-id='" + currentSelectedId + "']");
-                    selectedUser.addClass("selectedTarget");
+
+                    if (selectedUser.length > 0) {
+
+                        selectedUser.addClass("selectedTarget");
+                    }
+
+
+                    $(".unselectedTarget").click(function () {
+                        UpdateMessageHeader($(this));
+                        var userId = $(".selectedTarget").data("user-id");
+                        ShowMessages(userId, $(this));
+                    })
 
                     UpdateMessages();
+
+                    
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     console.log("Error sending message: " + errorThrown);
@@ -362,17 +391,11 @@ else
             }
         });
 
-        
-        setInterval(function () {
-            $('#ChatMod').load('/Chat/ChatModeration');
-        }, 2000);
+       // PARTIAL REFRESH
 
-        // PARTIAL REFRESH
         window.setInterval(function () {
             UpdateFriendsList();
             //UpdateMessages();
         }, 5000);
-        // let status = new PartialRefresh("/Chat/GetMessagesViewBag", "messageBody", 5, UpdateMessages)
-
     </script>
 }

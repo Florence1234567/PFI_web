@@ -18,7 +18,16 @@
             @Helper.ImageLink("Home", "About", "/info-icon.png", "menu-Images", "A propos...")
             @if (currentUser != null)
             {
-                @Helper.ImageLink("Chat", "Index", "/favicon.png", "menu-Images", "Salle de clavardage...")
+                if (Request.Path.Equals("/Chat/Index", StringComparison.OrdinalIgnoreCase) && currentUser.IsAdmin)
+                {
+                    @Helper.ImageLink("Chat", "ChatModeration", "/favicon.png", "menu-Images", "Salle de clavardage (modération)...")
+                }
+                else
+                {
+                    @Helper.ImageLink("Chat", "Index", "/favicon.png", "menu-Images", "Salle de clavardage...")
+                }
+
+
                 @Helper.ImageLink("Friendships", "Index", "/friendships.png", "menu-Images", "Gestion des amitiés...")
                 if (currentUser.IsAdmin)
                 {
