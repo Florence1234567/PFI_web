@@ -19,7 +19,7 @@
                 {
                     bool showNotif = false;
 
-                        
+
 
                     if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
                     {
@@ -36,8 +36,8 @@
                             }
 
                         </div>
-                                    }
-                                }
+                    }
+                }
             }
 
         </div>
@@ -112,6 +112,10 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/NotificationsHandler")
+
     <script defer>
 
         $("#message").hide();
@@ -138,7 +142,7 @@
                 $("#message").val("");
             }
 
-           
+
         }
 
         function DeleteMessage(id) {
@@ -356,7 +360,7 @@
 
                     UpdateMessages();
 
-                    
+
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     console.log("Error sending message: " + errorThrown);
@@ -391,7 +395,7 @@
             }
         });
 
-       // PARTIAL REFRESH
+        // PARTIAL REFRESH
 
         window.setInterval(function () {
             UpdateFriendsList();

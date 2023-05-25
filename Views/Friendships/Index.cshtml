@@ -9,8 +9,8 @@
 
 <hr />
 <div style="display: grid; grid-template-columns: 295px 35px; align-items: center;">
-    <input type="search" id="Search" placeholder="Recherche" class="form-control" runat="server"/>
-        <span id="SearchButton" class="icon fa fa-search" style="padding-left: 10px;"></span>
+    <input type="search" id="Search" placeholder="Recherche" class="form-control" runat="server" />
+    <span id="SearchButton" class="icon fa fa-search" style="padding-left: 10px;"></span>
 </div>
 <div class="friendfilters">
     <input type="checkbox" id="FilterNotFriend" class="filter" checked />
@@ -33,7 +33,11 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryval");
+    @Scripts.Render("~/bundles/jquery");
+    @Scripts.Render("~/bundles/bootstrap");
+    @Scripts.Render("~/bundles/NotificationsHandler");
+
     <script defer>
         $("#SearchButton").click(() => {
             var searchText = $("#Search").val();
