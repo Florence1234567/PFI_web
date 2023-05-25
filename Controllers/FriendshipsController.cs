@@ -15,6 +15,9 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult Index()
         {
+            Session["FilterNotFriend"] = true;
+            Session["FilterBlocked"] = true;
+
             int id = OnlineUsers.GetSessionUser().Id;
             var friendship = DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id);
             ViewBag.Friendship = friendship;
@@ -38,6 +41,9 @@ namespace ChatManager.Controllers
         [OnlineUsers.UserAccess]
         public ActionResult FriendshipsList()
         {
+            Session["FilterNotFriend"] = true;
+            Session["FilterBlocked"] = true;
+
             int id = OnlineUsers.GetSessionUser().Id;
             var friendship = DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id);
             ViewBag.Friendship = friendship;
@@ -51,7 +57,6 @@ namespace ChatManager.Controllers
                 {
                     string searchText = Session["SearchText"]?.ToString()?.ToLower();
                     users = DB.Users.ToList().Where(m => m.FirstName.ToLower().Contains(searchText) || m.LastName.ToLower().Contains(searchText));
-
                 }
             else
                 users = DB.Users.ToList();

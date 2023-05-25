@@ -33,10 +33,10 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval");
-    @Scripts.Render("~/bundles/jquery");
-    @Scripts.Render("~/bundles/bootstrap");
-    @Scripts.Render("~/bundles/NotificationsHandler");
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/NotificationsHandler")
 
     <script defer>
         $("#SearchButton").click(() => {
@@ -49,25 +49,18 @@
         });
 
         $("#FilterNotFriend").click(function () {
-            console.log($(this).is(":checked"));
-            console.log($(this).prop("checked"))
-
-
             $.ajax({
-                url: "/Friendships/SetFilterNotFriend?isChecked",
+                url: "/Friendships/SetFilterNotFriend/",
                 data: { isChecked: $(this).is(':checked') },
                 type: 'POST',
             });
         });
 
         $("#FilterBlocked").click(function () {
-            var filterBlocked = $("#FilterBlocked");
             $.ajax({
-                url: "/Friendships/SetFilterBlocked?isChecked" + filterBlocked,
-                type: 'post',
-                success: (function () {
-                    console.log(filterBlocked);
-                })
+                url: "/Friendships/SetFilterBlocked/",
+                data: { isChecked: $(this).is(':checked') },
+                type: 'POST',
             });
         });
 

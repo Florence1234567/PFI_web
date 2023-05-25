@@ -9,25 +9,20 @@
 {
     if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
     {
-        <div class="friendContainer">
-            <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
-                @Helper.AvatarUser(item, "UserSmallAvatar")
-            </a>
-            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
 
-            @{
-                if (item.Blocked)
-                {
-                    <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
-                }
-                else
-                {
-                    foreach (var friendship in ViewBag.friendship)
-                    {
-                        listEmpty = false;
-                        if (friendship.IdUser1 == item.Id || friendship.IdUser2 == item.Id)
-                        {
-                            noFriends = false;
+        foreach (var friendship in ViewBag.friendship)
+        {
+            listEmpty = false;
+            if (friendship.IdUser1 == item.Id || friendship.IdUser2 == item.Id)
+            {
+                noFriends = false;
+                <div class="friendContainer">
+                    <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
+                        @Helper.AvatarUser(item, "UserSmallAvatar")
+                    </a>
+                    @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+                    <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                        @{
                             if (friendship.Status == "Requested" && ChatManager.Models.OnlineUsers.GetSessionUser().Id == friendship.IdUser1)
                             {
                                 <div style="display: grid; grid-template-columns: 30px 30px;">
@@ -80,18 +75,41 @@
 
                             }
                         }
-                    }
-                    if (listEmpty || noFriends)
-                    {
+                </div>
+            }
+            if (Session["FilterBlocked"] != null)
+            {
+                if (item.Blocked && (bool)Session["FilterBlocked"])
+                {
+                    <div class="friendContainer">
+                        <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
+                            @Helper.AvatarUser(item, "UserSmallAvatar")
+                        </a>
+                        @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
+                        <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
+                    </div>
+
+                }
+            }
+            if (Session["FilterNotFriend"] != null)
+            {
+                if ((listEmpty || noFriends) && (bool)Session["FilterNotFriend"])
+                {
+                    <div class="friendContainer">
+                        <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
+                            @Helper.AvatarUser(item, "UserSmallAvatar")
+                        </a>
+                        @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
                         <a href="/Friendships/SendFriendshipRequest/@item.Id">
                             <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
                         </a>
-                    }
-
-                    noFriends = true;
+                    </div>
                 }
             }
 
-        </div>
+            noFriends = true;
+        }
     }
+
+
 }
