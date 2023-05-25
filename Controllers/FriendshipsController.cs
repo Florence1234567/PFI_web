@@ -85,7 +85,7 @@ namespace ChatManager.Controllers
 
             DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id));
 
-            OnlineUsers.AddNotification(id, "Vous avez reçu une demande d'amitié");
+            OnlineUsers.AddNotification(id, $"Vous avez reçu une demande d'amitié de {DB.Users.Get(id).FirstName} {DB.Users.Get(id).LastName}");
 
 
             return RedirectToAction("Index");
