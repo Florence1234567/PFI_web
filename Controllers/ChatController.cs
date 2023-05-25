@@ -109,7 +109,8 @@ namespace ChatManager.Controllers
         public ActionResult SendMessage(int id, string message)
         {
             DB.ChatMessages.Create(new ChatMessage(OnlineUsers.GetSessionUser().Id, id, message));
-            OnlineUsers.AddNotification(OnlineUsers.GetSessionUser().Id, message);
+            OnlineUsers.AddNotification(id, message);
+            OnlineUsers.PopNotifications(id);
 
             return RedirectToAction("Index");
         }
