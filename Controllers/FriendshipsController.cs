@@ -18,12 +18,17 @@ namespace ChatManager.Controllers
             var friendship = DB.Friendships.ToList().Where(m => m.IdUser1 == id || m.IdUser2 == id);
             ViewBag.Friendship = friendship;
 
+
             IEnumerable<User> users;
             if (Session["SearchText"] != null)
                 if ((string)Session["SearchText"] == "")
                     users = DB.Users.ToList();
                 else
-                    users = DB.Users.ToList().Where(m => m.FirstName.Contains((string)Session["SearchText"]) || m.LastName.Contains((string)Session["SearchText"]));
+                {
+                    string searchText = Session["SearchText"]?.ToString()?.ToLower();
+                    users = DB.Users.ToList().Where(m => m.FirstName.ToLower().Contains(searchText) || m.LastName.ToLower().Contains(searchText));
+                }
+
             else
                 users = DB.Users.ToList();
 
@@ -42,7 +47,11 @@ namespace ChatManager.Controllers
                 if ((string)Session["SearchText"] == "")
                     users = DB.Users.ToList();
                 else
-                    users = DB.Users.ToList().Where(m => m.FirstName.Contains((string)Session["SearchText"]) || m.LastName.Contains((string)Session["SearchText"]));
+                {
+                    string searchText = Session["SearchText"]?.ToString()?.ToLower();
+                    users = DB.Users.ToList().Where(m => m.FirstName.ToLower().Contains(searchText) || m.LastName.ToLower().Contains(searchText));
+
+                }
             else
                 users = DB.Users.ToList();
 
