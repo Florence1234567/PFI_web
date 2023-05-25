@@ -110,7 +110,7 @@ namespace ChatManager.Controllers
         {
             DB.ChatMessages.Create(new ChatMessage(OnlineUsers.GetSessionUser().Id, id, message));
             OnlineUsers.AddNotification(id, message);
-            OnlineUsers.PopNotifications(id);
+           // OnlineUsers.PopNotifications(id);
 
             return RedirectToAction("Index");
         }
