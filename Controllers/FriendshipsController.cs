@@ -97,6 +97,21 @@ namespace ChatManager.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult SendFriendshipRequest2(int id)
+        {
+            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == id ||
+            m.IdUser1 == OnlineUsers.GetSessionUser().Id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
+
+            if (friendships.Count() != 0)
+                DB.Friendships.Delete(friendships.First().Id);
+
+            DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id));
+
+            OnlineUsers.AddNotification(id, $"Vous avez reçu une demande d'amitié de {DB.Users.Get(id).FirstName} {DB.Users.Get(id).LastName}");
+
+
+            return RedirectToAction("Index");
+        }
         public ActionResult AcceptFriendshipRequest(int id)
         {
             var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);

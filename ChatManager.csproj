@@ -267,6 +267,7 @@
     <Content Include="Views\Friendships\SetFilterNotFriend.cshtml" />
     <Content Include="Views\Friendships\SetFilterBlocked.cshtml" />
     <Content Include="Views\Chat\ConversationsList.cshtml" />
+    <Content Include="Views\Friendships\SendFriendshipRequest2.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

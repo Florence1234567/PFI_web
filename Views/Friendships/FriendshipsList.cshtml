@@ -8,17 +8,13 @@
 @foreach (var item in Model)
 {
     if (ChatManager.Models.OnlineUsers.GetSessionUser() != item)
-    {
-        <div class="friendContainer">
-            <a href="mailto:@item.Email" title="Compte créé le @item.CreationDate">
-                @Helper.AvatarUser(item, "UserSmallAvatar")
-            </a>
-            @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(item.Id))
-
-            @{
-                if (item.Blocked && (bool)Session["FilterBlocked"])
+    {  @{
+                if (Session["FilterBlocked"] != null)
                 {
-                    <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
+                    if (item.Blocked && (bool)Session["FilterBlocked"])
+                    {
+                        <span class="fa red fa-ban icon" title="Usager bloqué par l'administrateur"></span>
+                    }
                 }
                 else
                 {
@@ -81,11 +77,14 @@
                             }
                         }
                     }
-                    if ((listEmpty || noFriends) && (bool)Session["FilterNotFriend"])
+                    if (Session["FilterNotFriend"] != null)
                     {
-                        <a href="/Friendships/SendFriendshipRequest/@item.Id">
-                            <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
-                        </a>
+                        if ((listEmpty || noFriends) && (bool)Session["FilterNotFriend"])
+                        {
+                            <a href="/Friendships/SendFriendshipRequest/@item.Id">
+                                <span class="fa green fa-plus-circle icon" title="Envoyer une demande d'ami à @item.GetFullName(false)"></span>
+                            </a>
+                        }
                     }
 
                     noFriends = true;
