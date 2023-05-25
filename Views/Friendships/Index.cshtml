@@ -57,13 +57,10 @@
         });
 
         $("#FilterBlocked").click(function () {
-            var filterBlocked = $("#FilterBlocked");
             $.ajax({
-                url: "/Friendships/SetFilterBlocked?isChecked" + filterBlocked,
-                type: 'post',
-                success: (function () {
-                    console.log(filterBlocked);
-                })
+                url: "/Friendships/SetFilterBlocked/",
+                data: { isChecked: $(this).is(':checked') },
+                type: 'POST',
             });
         });
 

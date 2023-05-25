@@ -57,7 +57,6 @@ namespace ChatManager.Controllers
                 {
                     string searchText = Session["SearchText"]?.ToString()?.ToLower();
                     users = DB.Users.ToList().Where(m => m.FirstName.ToLower().Contains(searchText) || m.LastName.ToLower().Contains(searchText));
-
                 }
             else
                 users = DB.Users.ToList();
@@ -97,21 +96,6 @@ namespace ChatManager.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult SendFriendshipRequest2(int id)
-        {
-            var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == id ||
-            m.IdUser1 == OnlineUsers.GetSessionUser().Id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
-
-            if (friendships.Count() != 0)
-                DB.Friendships.Delete(friendships.First().Id);
-
-            DB.Friendships.Create(new Friendship(OnlineUsers.GetSessionUser().Id, id));
-
-            OnlineUsers.AddNotification(id, $"Vous avez reçu une demande d'amitié de {DB.Users.Get(id).FirstName} {DB.Users.Get(id).LastName}");
-
-
-            return RedirectToAction("Index");
-        }
         public ActionResult AcceptFriendshipRequest(int id)
         {
             var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
@@ -126,7 +110,7 @@ namespace ChatManager.Controllers
         {
             var friendships = DB.Friendships.ToList().Where(m => m.IdUser1 == id && m.IdUser2 == OnlineUsers.GetSessionUser().Id);
             var friendship = DB.Friendships.Get(friendships.First().Id);
-            friendship.Status = "Friend";
+            friendship.Status = "Declined";
             DB.Friendships.Update(friendship);
 
             return RedirectToAction("Index");
