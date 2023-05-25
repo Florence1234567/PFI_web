@@ -44,15 +44,19 @@
             });
         });
 
-        $("#FilterNotFriend").click(() => {
+        $("#FilterNotFriend").click(function () {
+            console.log($(this).is(":checked"));
+            console.log($(this).prop("checked"))
+
+
             $.ajax({
                 url: "/Friendships/SetFilterNotFriend?isChecked",
                 data: { isChecked: $(this).is(':checked') },
-                type: 'post',
+                type: 'POST',
             });
         });
 
-        $("#FilterBlocked").click(() => {
+        $("#FilterBlocked").click(function () {
             var filterBlocked = $("#FilterBlocked");
             $.ajax({
                 url: "/Friendships/SetFilterBlocked?isChecked" + filterBlocked,
